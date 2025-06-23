@@ -1,0 +1,1 @@
+CREATE DATABASE goreto_db;
