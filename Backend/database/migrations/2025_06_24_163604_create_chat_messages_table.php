@@ -11,12 +11,11 @@ return new class extends Migration
         Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
             $table->text('messages');
-            $table->timestampsTz('sent_at')->nullable();
-            $table->timestampsTz('seen_at')->nullable();
-            $table->string('sent_by')->nullable();
-            $table->timestampsTz();
-
+            $table->timestampTz('sent_at')->nullable();
+            $table->timestampTz('seen_at')->nullable();
+            $table->foreignId('sent_by')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('chat_id')->constrained('chats')->onDelete('cascade');
+            $table->timestampsTz();
         });
     }
 

@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('created_by')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
             $table->timestampsTz();
         });
     }

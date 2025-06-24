@@ -13,7 +13,6 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->boolean('is_group')->default(false);
             $table->string('created_by')->nullable();
-            $table->timestampTz('created_at')->useCurrent();
             $table->timestampsTz();
         });
     }
