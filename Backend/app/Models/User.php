@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'email_verified_at',
         'role_id',
         'country_id',
     ];
@@ -39,6 +40,21 @@ class User extends Authenticatable
     public function userCategories()
     {
         return $this->hasMany(UserCategory::class);
+    }
+
+    public function profilePicture()
+    {
+        return $this->hasMany(ProfilePicture::class);
+    }
+
+    public function favouriteLocations()
+    {
+        return $this->hasMany(FavouriteLocation::class);
+    }
+
+    public function locationReviews()
+    {
+        return $this->hasMany(LocationReview::class);
     }
 
     /**
