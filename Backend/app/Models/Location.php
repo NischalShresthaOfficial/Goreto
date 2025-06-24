@@ -33,4 +33,14 @@ class Location extends Model
     {
         return $this->hasMany(LocationReview::class);
     }
+
+     public function groupLocations()
+    {
+        return $this->hasMany(GroupLocation::class);
+    }
+
+    public function postLocations()
+    {
+        return $this->hasMany(PostLocation::class);
+    }
 }

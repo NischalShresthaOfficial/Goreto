@@ -57,6 +57,21 @@ class User extends Authenticatable
         return $this->hasMany(LocationReview::class);
     }
 
+    public function userGroups()
+    {
+        return $this->hasMany(UserGroup::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function postReviews()
+    {
+        return $this->hasMany(PostReview::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
