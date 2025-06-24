@@ -43,4 +43,9 @@ class Location extends Model
     {
         return $this->hasMany(PostLocation::class);
     }
+
+    public function locationNotifications()
+    {
+        return $this->hasMany(LocationNotification::class);
+    }
 }
