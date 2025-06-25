@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -28,7 +30,7 @@ class UserResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Section::make([
+            Section::make('User Information')->schema([
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -60,6 +62,30 @@ class UserResource extends Resource
                     ->label('Email Verified At')
                     ->nullable(),
             ]),
+
+            Section::make('Profile Pictures')->schema([
+                Repeater::make('profilePicture')
+                    ->relationship()
+                    ->schema([
+                        FileUpload::make('profile_picture_url')
+                            ->image()
+                            ->directory('profile-pictures')
+                            ->required()
+                            ->label('Profile Picture'),
+
+                        Select::make('is_active')
+                            ->label('Active?')
+                            ->options([
+                                true => 'Yes',
+                                false => 'No',
+                            ])
+                            ->default(true)
+                            ->required(),
+                    ])
+                    ->columns(2)
+                    ->collapsible()
+                    ->collapsed(false),
+            ]),
         ]);
     }
 
@@ -70,9 +96,7 @@ class UserResource extends Resource
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('role.name')->label('Role'),
-                TextColumn::make('country.country')
-                    ->label('Country'),
-
+                TextColumn::make('country.country')->label('Country'),
                 TextColumn::make('email_verified_at')->label('Verified At'),
                 TextColumn::make('created_at')->label('Created At')->sortable(),
             ])
