@@ -21,7 +21,7 @@ class LocationResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Locations';
 
     protected static ?string $navigationLabel = 'Locations';
 

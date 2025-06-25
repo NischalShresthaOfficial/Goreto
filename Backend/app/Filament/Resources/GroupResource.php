@@ -22,7 +22,7 @@ class GroupResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'User Management';
 
     protected static ?string $navigationLabel = 'Groups';
 

@@ -18,7 +18,7 @@ class CityResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-c-building-office-2';
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static ?string $navigationGroup = 'Geography';
 
     protected static ?string $navigationLabel = 'Cities';
 
