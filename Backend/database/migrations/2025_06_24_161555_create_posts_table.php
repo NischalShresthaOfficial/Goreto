@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->enum('status', ['active', 'blocked']);
             $table->integer('likes')->default(0);
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 

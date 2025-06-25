@@ -46,6 +46,15 @@ class PostResource extends Resource
                     ->searchable()
                     ->required(),
 
+                Select::make('status')
+                    ->label('Status')
+                    ->options([
+                        'active' => 'Active',
+                        'blocked' => 'Blocked',
+                    ])
+                    ->required()
+                    ->default('active'),
+
                 TextInput::make('likes')
                     ->numeric()
                     ->default(0),
@@ -88,7 +97,10 @@ class PostResource extends Resource
                     ->label('Created By')
                     ->sortable()
                     ->searchable(),
-
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->sortable()
+                    ->badge(fn ($state) => $state === 'active' ? 'success' : 'danger'),
                 TextColumn::make('description')->limit(50),
                 TextColumn::make('likes')->sortable(),
                 TextColumn::make('created_at')->dateTime('Y-m-d H:i')->sortable(),

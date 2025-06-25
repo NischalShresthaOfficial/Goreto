@@ -13,6 +13,7 @@ class Post extends Model
     protected $fillable = [
         'title',
         'description',
+        'status',
         'likes',
         'user_id',
     ];
@@ -20,7 +21,7 @@ class Post extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['title', 'description', 'likes', 'user_id'])
+            ->logOnly(['title', 'description', 'status','likes', 'user_id'])
             ->useLogName('post')
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
