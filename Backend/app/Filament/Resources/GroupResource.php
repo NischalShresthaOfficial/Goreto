@@ -40,6 +40,27 @@ class GroupResource extends Resource
                     ->searchable()
                     ->nullable(),
 
+                Repeater::make('userGroups')
+                    ->relationship()
+                    ->schema([
+                        Select::make('user_id')
+                            ->label('User')
+                            ->options(fn () => \App\Models\User::pluck('name', 'id'))
+                            ->searchable(),
+
+                        Select::make('member_role')
+                            ->label('Role')
+                            ->options([
+                                'admin' => 'Admin',
+                                'member' => 'Member',
+                            ])
+                            ->default('member'),
+                    ])
+                    ->columns(2)
+                    ->label('Group Members')
+                    ->collapsible()
+                    ->collapsed(false),
+
                 Repeater::make('groupLocations')
                     ->relationship()
                     ->schema([
@@ -53,7 +74,6 @@ class GroupResource extends Resource
                     ->label('Add Location')
                     ->collapsible()
                     ->collapsed(false),
-
             ]),
         ]);
     }
@@ -65,6 +85,27 @@ class GroupResource extends Resource
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('created_by')->sortable()->searchable(),
+                TextColumn::make('members')
+                    ->label('Members')
+                    ->getStateUsing(function ($record) {
+                        $creatorId = $record->created_by;
+                        $members = $record->userGroups()->with('user')->get()->pluck('user.name')->filter();
+                        if ($creatorId && ! $members->contains(function ($name) use ($creatorId) {
+                            $creatorName = \App\Models\User::find($creatorId)?->name;
+
+                            return $name === $creatorName;
+                        })) {
+                            $creatorName = \App\Models\User::find($creatorId)?->name;
+                            if ($creatorName) {
+                                $members->prepend($creatorName);
+                            }
+                        }
+
+                        return $members->isNotEmpty() ? $members->implode(', ') : 'No members';
+                    })
+                    ->wrap()
+                    ->tooltip(fn ($state) => $state),
+
                 TextColumn::make('created_at')->dateTime('Y-m-d H:i')->sortable(),
             ])
             ->actions([
