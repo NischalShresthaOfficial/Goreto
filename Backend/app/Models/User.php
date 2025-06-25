@@ -46,7 +46,6 @@ class User extends Authenticatable
             ->dontSubmitEmptyLogs();
     }
 
-    // Relationships
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');

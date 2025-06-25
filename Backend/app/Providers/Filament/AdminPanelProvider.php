@@ -32,8 +32,8 @@ class AdminPanelProvider extends PanelProvider
             ->font('Plus Jakarta Sans')
             ->brandLogoHeight('5.0rem')
             ->colors([
-                'primary' => '#FCAC43',
-                // 'secondary' => '#FCAC43',
+                'primary' => '#FFB23F',
+                'secondary' => '#F7F8F9',
                 'danger' => Color::Rose,
                 'gray' => Color::Gray,
                 'info' => Color::Blue,
