@@ -21,7 +21,7 @@ class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-c-clipboard-document-list';
 
     protected static ?string $navigationGroup = 'Content Management';
 
