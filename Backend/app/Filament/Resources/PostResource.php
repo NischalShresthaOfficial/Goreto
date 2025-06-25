@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\Pages;
 use App\Models\Location;
 use App\Models\Post;
+use App\Models\User;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
@@ -38,6 +39,12 @@ class PostResource extends Resource
                 MarkdownEditor::make('description')
                     ->required()
                     ->maxLength(65535),
+
+                Select::make('user_id')
+                    ->label('Created By')
+                    ->options(User::pluck('name', 'id'))
+                    ->searchable()
+                    ->required(),
 
                 TextInput::make('likes')
                     ->numeric()
@@ -77,6 +84,11 @@ class PostResource extends Resource
             ->columns([
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('title')->sortable()->searchable(),
+                TextColumn::make('user.name')
+                    ->label('Created By')
+                    ->sortable()
+                    ->searchable(),
+
                 TextColumn::make('description')->limit(50),
                 TextColumn::make('likes')->sortable(),
                 TextColumn::make('created_at')->dateTime('Y-m-d H:i')->sortable(),

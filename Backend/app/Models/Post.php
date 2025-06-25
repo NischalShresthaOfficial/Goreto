@@ -3,15 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Post extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'title',
         'description',
         'likes',
         'user_id',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['title', 'description', 'likes', 'user_id'])
+            ->useLogName('post')
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function user()
     {
