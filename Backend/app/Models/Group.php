@@ -3,16 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Group extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'name',
         'created_by',
         'created_at',
     ];
 
-   public function userGroups()
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'created_by'])
+            ->useLogName('group')
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function userGroups()
     {
         return $this->hasMany(UserGroup::class);
     }

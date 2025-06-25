@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GroupResource\Pages;
 use App\Models\Group;
 use App\Models\Location;
+use App\Models\User;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -32,9 +33,12 @@ class GroupResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                TextInput::make('created_by')
-                    ->nullable()
-                    ->maxLength(255),
+
+                Select::make('created_by')
+                    ->label('Created By')
+                    ->options(fn () => User::pluck('name', 'id'))
+                    ->searchable()
+                    ->nullable(),
 
                 Repeater::make('groupLocations')
                     ->relationship()
