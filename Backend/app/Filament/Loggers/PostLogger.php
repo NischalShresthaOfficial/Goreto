@@ -34,6 +34,9 @@ class PostLogger extends Logger
                 Field::make('description')
                     ->label('Description'),
 
+                Field::make('status')
+                    ->label('Status'),
+
                 Field::make('likes')
                     ->label('Likes'),
 

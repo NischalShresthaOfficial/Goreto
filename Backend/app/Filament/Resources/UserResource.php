@@ -95,7 +95,9 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('role.name')->label('Role'),
+                TextColumn::make('role.name')
+                    ->label('Role')
+                    ->badge(),
                 TextColumn::make('country.country')->label('Country'),
                 TextColumn::make('email_verified_at')->label('Verified At'),
                 TextColumn::make('created_at')->label('Created At')->sortable(),

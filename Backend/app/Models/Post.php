@@ -46,4 +46,9 @@ class Post extends Model
     {
         return $this->hasMany(PostReview::class);
     }
+
+    public function postReports()
+    {
+        return $this->hasMany(PostReport::class);
+    }
 }

@@ -45,7 +45,6 @@ class PostReviewResource extends Resource
                     ->options(Post::pluck('title', 'id'))
                     ->searchable()
                     ->required(),
-
             ]),
         ]);
     }

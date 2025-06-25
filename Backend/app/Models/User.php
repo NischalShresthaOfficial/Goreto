@@ -110,4 +110,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserReport::class);
     }
+
+    public function postReports()
+    {
+        return $this->hasMany(PostReport::class);
+    }
 }
