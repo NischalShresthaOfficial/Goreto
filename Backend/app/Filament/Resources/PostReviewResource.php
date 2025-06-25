@@ -3,14 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostReviewResource\Pages;
-use App\Models\PostReview;
 use App\Models\Post;
+use App\Models\PostReview;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Components\Card;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -37,15 +36,16 @@ class PostReviewResource extends Resource
 
                 Select::make('user_id')
                     ->label('User')
-                    ->relationship('user', 'name')
+                    ->options(User::pluck('name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Select::make('post_id')
                     ->label('Post')
-                    ->relationship('post', 'title')
+                    ->options(Post::pluck('title', 'id'))
                     ->searchable()
                     ->required(),
+
             ]),
         ]);
     }
