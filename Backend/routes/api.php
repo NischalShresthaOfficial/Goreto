@@ -3,12 +3,12 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Places\PopularPlacesController;
+use App\Http\Controllers\Places\StorePlacesController;
+use App\Http\Controllers\Places\UserCategoryController;
+use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Places\StorePlacesController;
-use App\Http\Controllers\UserManagement\CategoryController;
-
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
@@ -42,5 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/categories', [CategoryController::class, 'store']);
 
+    Route::post('/user-category', [UserCategoryController::class, 'searchAroundUser']);
 
 });

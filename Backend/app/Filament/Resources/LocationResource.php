@@ -50,6 +50,13 @@ class LocationResource extends Resource
                     ->searchable()
                     ->preload(),
 
+                Select::make('category_id')
+                    ->label('Category')
+                    ->relationship('category', 'category')
+                    ->required()
+                    ->searchable()
+                    ->preload(),
+
                 Repeater::make('locationImages')
                     ->relationship()
                     ->label('Location Images')
@@ -75,6 +82,7 @@ class LocationResource extends Resource
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('city.city')->label('City')->sortable()->searchable(),
+                TextColumn::make('category.category')->label('Category')->sortable()->searchable(),
 
                 TextColumn::make('latitude')->sortable(),
                 TextColumn::make('longitude')->sortable(),

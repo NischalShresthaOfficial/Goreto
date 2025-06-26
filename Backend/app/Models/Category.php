@@ -15,4 +15,9 @@ class Category extends Model
     {
         return $this->hasMany(UserCategory::class);
     }
+
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
 }

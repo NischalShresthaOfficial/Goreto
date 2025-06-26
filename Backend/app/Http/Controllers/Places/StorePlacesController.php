@@ -3,18 +3,20 @@
 namespace App\Http\Controllers\Places;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\City;
 use App\Models\Location;
 use App\Models\LocationImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class StorePlacesController extends Controller
 {
     public function fetchAndStore(Request $request)
     {
-        $limit = $request->input('limit', 10);
+        $limit = $request->input('limit', 100);
         if ($limit > 100) {
             $limit = 100;
         }
@@ -62,53 +64,84 @@ class StorePlacesController extends Controller
                         continue;
                     }
 
+                    $latRounded = round($latitude, 5);
+                    $lngRounded = round($longitude, 5);
+
+                    $exists = Location::whereRaw('LOWER(name) = ?', [strtolower($name)])
+                        ->whereRaw('ROUND(latitude, 5) = ?', [$latRounded])
+                        ->whereRaw('ROUND(longitude, 5) = ?', [$lngRounded])
+                        ->exists();
+
+                    if ($exists) {
+                        continue;
+                    }
+
                     $city = City::firstOrCreate(['city' => $locality]);
                     $cityId = $city->id;
 
-                    $exists = Location::whereRaw('LOWER(name) = ?', [strtolower($name)])
-                        ->where('latitude', $latitude)
-                        ->where('longitude', $longitude)
-                        ->exists();
+                    $categoryId = null;
+                    if (! empty($place['categories'])) {
+                        $firstCategory = $place['categories'][0];
 
-                    if (! $exists) {
-                        $location = Location::create([
-                            'name' => $name,
-                            'latitude' => $latitude,
-                            'longitude' => $longitude,
-                            'city_id' => $cityId,
-                        ]);
+                        $fsqCategoryId = $firstCategory['id'] ?? null;
+                        $categoryName = $firstCategory['name'] ?? 'Unknown';
 
-                        if (! empty($place['categories'])) {
-                            foreach ($place['categories'] as $category) {
-                                if (! empty($category['icon']['prefix']) && ! empty($category['icon']['suffix'])) {
-                                    $imageUrl = $category['icon']['prefix'].'64'.$category['icon']['suffix'];
+                        if ($fsqCategoryId) {
+                            $category = Category::firstOrCreate(
+                                ['fsq_category_id' => $fsqCategoryId],
+                                ['category' => $categoryName]
+                            );
+                        } else {
+                            $category = Category::firstOrCreate(
+                                ['category' => $categoryName],
+                                ['fsq_category_id' => null]
+                            );
+                        }
 
-                                    $existingImage = LocationImage::where('image_path', 'like', '%'.md5($imageUrl).'%')->first();
+                        $categoryId = $category->id;
+                    } else {
+                        Log::warning("No categories array found for place: {$name}");
+                    }
 
-                                    if ($existingImage) {
-                                        LocationImage::create([
-                                            'location_id' => $location->id,
-                                            'image_path' => $existingImage->image_path,
-                                        ]);
-                                    } else {
-                                        $imageContents = Http::get($imageUrl)->body();
-                                        $filename = 'location-images/'.md5($imageUrl).'.png';
+                    $location = Location::create([
+                        'name' => $name,
+                        'latitude' => $latitude,
+                        'longitude' => $longitude,
+                        'city_id' => $cityId,
+                        'category_id' => $categoryId,
+                    ]);
 
-                                        if (! Storage::disk('public')->exists($filename)) {
-                                            Storage::disk('public')->put($filename, $imageContents);
-                                        }
+                    if (! empty($place['categories'])) {
+                        foreach ($place['categories'] as $category) {
+                            if (! empty($category['icon']['prefix']) && ! empty($category['icon']['suffix'])) {
+                                $imageUrl = $category['icon']['prefix'].'64'.$category['icon']['suffix'];
+                                $hash = md5($imageUrl);
 
-                                        LocationImage::create([
-                                            'location_id' => $location->id,
-                                            'image_path' => $filename,
-                                        ]);
+                                $existingImage = LocationImage::where('image_path', 'like', "%{$hash}%")->first();
+
+                                if ($existingImage) {
+                                    LocationImage::create([
+                                        'location_id' => $location->id,
+                                        'image_path' => $existingImage->image_path,
+                                    ]);
+                                } else {
+                                    $imageContents = Http::get($imageUrl)->body();
+                                    $filename = 'location-images/'.$hash.'.png';
+
+                                    if (! Storage::disk('public')->exists($filename)) {
+                                        Storage::disk('public')->put($filename, $imageContents);
                                     }
+
+                                    LocationImage::create([
+                                        'location_id' => $location->id,
+                                        'image_path' => $filename,
+                                    ]);
                                 }
                             }
                         }
-
-                        $allPlaces[] = $location;
                     }
+
+                    $allPlaces[] = $location;
                 }
             }
         }
