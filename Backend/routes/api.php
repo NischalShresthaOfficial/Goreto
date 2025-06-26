@@ -6,8 +6,9 @@ use App\Http\Controllers\Places\PopularPlacesController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Places\FetchPlacesController;
 use App\Http\Controllers\Places\StorePlacesController;
+use App\Http\Controllers\UserManagement\CategoryController;
+
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
@@ -38,5 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/popular-places', [PopularPlacesController::class, 'search']);
 
     Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
+
+    Route::post('/categories', [CategoryController::class, 'store']);
+
 
 });
