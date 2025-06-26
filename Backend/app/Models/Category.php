@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    protected $fillable = ['category'];
+    protected $fillable = [
+        'fsq_category_id',
+        'category',
+    ];
 
-     public function userCategories()
+    public function userCategories()
     {
         return $this->hasMany(UserCategory::class);
     }
