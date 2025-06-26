@@ -28,11 +28,19 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Section::make([
+                Section::make('Category Details')->schema([
+                    TextInput::make('id')
+                        ->label('ID')
+                        ->disabled()
+                        ->required(),
                     TextInput::make('category')
                         ->required()
                         ->maxLength(255)
                         ->label('Category Name'),
+                    TextInput::make('fsq_category_id')
+                        ->required()
+                        ->maxLength(255)
+                        ->label('Foursquare Category ID'),
                 ]),
             ]);
     }
@@ -41,14 +49,24 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
-                TextColumn::make('category')->searchable()->sortable(),
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+                TextColumn::make('fsq_category_id')
+                    ->label('Foursquare Category ID')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('category')
+                    ->label('Category Name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('Y-m-d H:i')
                     ->sortable(),
             ])
             ->filters([
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
