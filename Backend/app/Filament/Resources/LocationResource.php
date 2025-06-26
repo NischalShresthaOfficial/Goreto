@@ -43,10 +43,6 @@ class LocationResource extends Resource
                     ->numeric()
                     ->rule('between:-180,180'),
 
-                TextInput::make('plus_code')
-                    ->nullable()
-                    ->maxLength(255),
-
                 Select::make('city_id')
                     ->label('City')
                     ->relationship('city', 'city')

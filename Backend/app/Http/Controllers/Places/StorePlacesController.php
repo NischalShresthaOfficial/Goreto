@@ -54,7 +54,6 @@ class StorePlacesController extends Controller
                     $name = trim($place['name'] ?? 'Unknown');
                     $latitude = $place['latitude'] ?? null;
                     $longitude = $place['longitude'] ?? null;
-                    $plusCode = $place['location']['formatted_address'] ?? null;
                     $locality = $place['location']['locality'] ?? null;
 
                     if (! $locality || ! $latitude || ! $longitude) {
@@ -74,7 +73,6 @@ class StorePlacesController extends Controller
                             'name' => $name,
                             'latitude' => $latitude,
                             'longitude' => $longitude,
-                            'plus_code' => $plusCode,
                             'city_id' => $cityId,
                         ];
 
