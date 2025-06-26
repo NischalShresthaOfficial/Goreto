@@ -8,10 +8,12 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasRoles, LogsActivity, Notifiable;
+    use HasFactory, HasRoles, HasApiTokens, LogsActivity, Notifiable;
 
     protected $fillable = [
         'name',
@@ -19,6 +21,7 @@ class User extends Authenticatable
         'password',
         'email_verified_at',
         'country_id',
+        'role_id',
     ];
 
     protected $hidden = [

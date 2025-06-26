@@ -84,7 +84,6 @@ class UserResource extends Resource
                         FileUpload::make('profile_picture_url')
                             ->image()
                             ->directory('profile-pictures')
-                            ->required()
                             ->label('Profile Picture'),
 
                         Select::make('is_active')
@@ -93,8 +92,7 @@ class UserResource extends Resource
                                 true => 'Yes',
                                 false => 'No',
                             ])
-                            ->default(true)
-                            ->required(),
+                            ->default(true),
                     ])
                     ->columns(2)
                     ->collapsible()
