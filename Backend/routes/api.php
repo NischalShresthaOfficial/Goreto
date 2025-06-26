@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Places\PopularPlacesController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Places\FetchPlacesController;
+use App\Http\Controllers\Places\StorePlacesController;
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
@@ -31,4 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);
+
+    Route::get('/popular-places', [PopularPlacesController::class, 'search']);
+
+    Route::get('/fetch-places', [FetchPlacesController::class, 'fetchNepalPlaces']);
+
+    Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
+
 });
