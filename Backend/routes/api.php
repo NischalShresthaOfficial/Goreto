@@ -37,8 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/popular-places', [PopularPlacesController::class, 'search']);
 
-    Route::get('/fetch-places', [FetchPlacesController::class, 'fetchNepalPlaces']);
-
     Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
 
 });
