@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestampsTz();
-            $table->foreignId('role_id')->nullable()->constrained('roles')->onDelete('set null');
             $table->foreignId('country_id')->nullable()->constrained('countries')->onDelete('cascade');
         });
 

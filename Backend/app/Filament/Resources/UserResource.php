@@ -46,11 +46,10 @@ class UserResource extends Resource
                     ->required(fn (string $context) => $context === 'create')
                     ->label('Password'),
 
-                Select::make('role_id')
-                    ->label('Role')
-                    ->relationship('role', 'name')
-                    ->searchable()
-                    ->preload(),
+              Select::make('roles')
+    ->multiple()
+    ->relationship('roles', 'name')
+    ->preload(),
 
                 Select::make('country_id')
                     ->label('Country')
