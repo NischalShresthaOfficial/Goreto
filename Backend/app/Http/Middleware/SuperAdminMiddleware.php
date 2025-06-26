@@ -17,19 +17,16 @@ class SuperAdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        // Allow access to login page
         if ($request->is('admin/login')) {
             return $next($request);
         }
 
-        // Check if user is authenticated
         if (!Auth::check()) {
             abort(403, 'Unauthorized access - Please login first');
         }
 
         $user = Auth::user();
 
-        // Check if user has required roles
         if ($user->hasRole(['super_admin', 'admin', 'content_moderator'])) {
             return $next($request);
         }
