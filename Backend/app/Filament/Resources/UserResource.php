@@ -64,8 +64,7 @@ class UserResource extends Resource
                                 $record->save();
                             }
                         }
-                    })
-                    ->dehydrated(false),
+                    }),
 
                 Select::make('country_id')
                     ->label('Country')
