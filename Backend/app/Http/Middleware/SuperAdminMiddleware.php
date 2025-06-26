@@ -30,7 +30,7 @@ class SuperAdminMiddleware
         $user = Auth::user();
 
         // Check if user has required roles
-        if ($user->hasRole(['super_admin', 'admin', 'panel_user'])) {
+        if ($user->hasRole(['super_admin', 'admin', 'content_moderator'])) {
             return $next($request);
         }
 
