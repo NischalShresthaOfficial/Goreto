@@ -2,7 +2,6 @@
 
 namespace App\Filament\Loggers;
 
-use App\Filament\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Support\Htmlable;
 use Noxo\FilamentActivityLog\Loggers\Logger;
@@ -16,7 +15,7 @@ class UserLogger extends Logger
 
     public static function getLabel(): string|Htmlable|null
     {
-          return 'User';
+        return 'User';
     }
 
     public static function resource(ResourceLogger $logger): ResourceLogger
@@ -26,7 +25,6 @@ class UserLogger extends Logger
                 Field::make('name')->label('Name'),
                 Field::make('email')->label('Email'),
                 Field::make('email_verified_at')->label('Verified At'),
-                Field::make('role.name')->label('Role')->badge(),
                 Field::make('country.country')->label('Country')->badge(),
             ])
             ->relationManagers([

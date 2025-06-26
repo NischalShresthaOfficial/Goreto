@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -32,21 +31,25 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    /**
-     * Configure Spatie Activity Log
-     */
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'role_id', 'country_id'])
+            ->logOnly(['name', 'email', 'country_id'])
             ->useLogName('user')
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontSubmitEmptyLogs()
+            ->logExcept(['roles'])
+            ->submitEmptyLogs();
     }
 
     public function role()
     {
         return $this->belongsTo(\Spatie\Permission\Models\Role::class, 'role_id');
+    }
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return $this->role?->name;
     }
 
     public function country()
