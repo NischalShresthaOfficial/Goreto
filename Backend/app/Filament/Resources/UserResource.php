@@ -16,6 +16,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserResource extends Resource
 {
@@ -46,10 +47,25 @@ class UserResource extends Resource
                     ->required(fn (string $context) => $context === 'create')
                     ->label('Password'),
 
-              Select::make('roles')
-    ->multiple()
-    ->relationship('roles', 'name')
-    ->preload(),
+                Select::make('role_id')
+                    ->label('Role')
+                    ->options(Role::all()->pluck('name', 'id'))
+                    ->searchable()
+                    ->required()
+                    ->afterStateHydrated(function ($component, $state, $record) {
+                        $component->state($record?->roles()->first()?->id);
+                    })
+                    ->afterStateUpdated(function ($state, $component, $record) {
+                        if ($record) {
+                            $role = Role::find($state);
+                            if ($role) {
+                                $record->syncRoles([$role->name]);
+                                $record->role_id = $role->id;
+                                $record->save();
+                            }
+                        }
+                    })
+                    ->dehydrated(false),
 
                 Select::make('country_id')
                     ->label('Country')
@@ -94,9 +110,10 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
-                TextColumn::make('role.name')
+                TextColumn::make('roles.0.name')
                     ->label('Role')
-                    ->badge(),
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('country.country')->label('Country'),
                 TextColumn::make('email_verified_at')->label('Verified At'),
                 TextColumn::make('created_at')->label('Created At')->sortable(),
