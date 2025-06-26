@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Places;
 use App\Http\Controllers\Controller;
 use App\Models\City;
 use App\Models\Location;
+use App\Models\LocationImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class StorePlacesController extends Controller
 {
@@ -69,21 +71,50 @@ class StorePlacesController extends Controller
                         ->exists();
 
                     if (! $exists) {
-                        $locationData = [
+                        $location = Location::create([
                             'name' => $name,
                             'latitude' => $latitude,
                             'longitude' => $longitude,
                             'city_id' => $cityId,
-                        ];
+                        ]);
 
-                        $allPlaces[] = Location::create($locationData);
+                        if (! empty($place['categories'])) {
+                            foreach ($place['categories'] as $category) {
+                                if (! empty($category['icon']['prefix']) && ! empty($category['icon']['suffix'])) {
+                                    $imageUrl = $category['icon']['prefix'].'64'.$category['icon']['suffix'];
+
+                                    $existingImage = LocationImage::where('image_path', 'like', '%'.md5($imageUrl).'%')->first();
+
+                                    if ($existingImage) {
+                                        LocationImage::create([
+                                            'location_id' => $location->id,
+                                            'image_path' => $existingImage->image_path,
+                                        ]);
+                                    } else {
+                                        $imageContents = Http::get($imageUrl)->body();
+                                        $filename = 'location-images/'.md5($imageUrl).'.png';
+
+                                        if (! Storage::disk('public')->exists($filename)) {
+                                            Storage::disk('public')->put($filename, $imageContents);
+                                        }
+
+                                        LocationImage::create([
+                                            'location_id' => $location->id,
+                                            'image_path' => $filename,
+                                        ]);
+                                    }
+                                }
+                            }
+                        }
+
+                        $allPlaces[] = $location;
                     }
                 }
             }
         }
 
         return response()->json([
-            'message' => 'Fetched and stored popular places in Nepal.',
+            'message' => 'Fetched and stored popular places in Nepal with images.',
             'stored_count' => count($allPlaces),
             'places' => $allPlaces,
         ]);
