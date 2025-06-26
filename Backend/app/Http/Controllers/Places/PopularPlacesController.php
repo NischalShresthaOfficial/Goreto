@@ -13,14 +13,19 @@ class PopularPlacesController extends Controller
     {
         $validated = $request->validate([
             'll' => ['required', 'regex:/^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$/'],
+            'limit' => ['nullable', 'integer'],
+            'radius' => ['nullable', 'integer'],
         ]);
+
+        $limit = $validated['limit'] ?? 10;
+        $radius = $validated['radius'] ?? 500;
 
         [$lat, $lng] = explode(',', $validated['ll']);
 
         $localResults = Location::with('locationImages')
             ->whereBetween('latitude', [(float) $lat - 0.5, (float) $lat + 0.5])
             ->whereBetween('longitude', [(float) $lng - 0.5, (float) $lng + 0.5])
-            ->limit(10)
+            ->limit($limit)
             ->get();
 
         if ($localResults->isNotEmpty()) {
@@ -37,9 +42,9 @@ class PopularPlacesController extends Controller
             'X-Places-API-Version' => '2025-06-17',
         ])->get('https://places-api.foursquare.com/places/search', [
             'll' => $validated['ll'],
-            'radius' => 100000,
+            'radius' => $radius,
             'sort' => 'POPULARITY',
-            'limit' => 10,
+            'limit' => $limit,
         ]);
 
         if ($response->successful()) {
