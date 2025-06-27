@@ -1,0 +1,43 @@
+Goreto
+
+lib/
+├── core/
+│   ├── constants/
+│   ├── errors/
+│   ├── exceptions/
+│   ├── utils/
+│   └── services/          # For reusable services (e.g., Notifications, Location)
+├── data/
+│   ├── models/
+│   ├── datasources/
+│   │   ├── remote/        # API service calls
+│   │   └── local/         # Isar/local DB handling
+│   ├── repositories/      # Implements domain layer contracts
+│   └── providers/         # API/state providers using Provider/ChangeNotifier
+├── domain/
+│   ├── entities/          # Pure Dart business logic objects
+│   ├── repositories/      # Abstract interfaces (for clean architecture)
+│   └── usecases/          # Logic for single app use cases
+├── features/
+│   ├── auth/
+│   │   ├── screens/
+│   │   ├── widgets/
+│   │   ├── providers/
+│   │   └── viewmodels/
+│   ├── maps/
+│   ├── planner/
+│   ├── reviews/
+│   ├── group/
+│   ├── weather/
+│   ├── blog/
+│   └── chat/
+├── presentation/
+│   ├── screens/           # Generic UI screens that combine feature widgets
+│   ├── widgets/           # Common reusable widgets
+│   └── themes/
+├── l10n/                  # Localization files
+├── routes/                # App routing (go_router or Navigator)
+├── main.dart
+└── bootstrap.dart         # Entry setup (ProviderScope, bindings, etc.)
+
+
