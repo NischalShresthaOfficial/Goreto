@@ -42,6 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/categories', [CategoryController::class, 'store']);
 
-    Route::post('/user-category', [UserCategoryController::class, 'searchAroundUser']);
+    Route::get('/user-category', [UserCategoryController::class, 'searchByUserCategoryOnly']);
 
 });
