@@ -20,9 +20,11 @@ class UserCategoryController extends Controller
 
         $validated = $request->validate([
             'limit' => 'nullable|integer|min:1|max:50',
+            'll' => 'required|string|regex:/^-?\d+\.\d+,-?\d+\.\d+$/',
         ]);
 
         $limit = $validated['limit'] ?? 10;
+        $ll = $validated['ll'];
 
         $userCategoryIds = DB::table('user_categories')
             ->where('user_id', $user->id)
@@ -44,18 +46,21 @@ class UserCategoryController extends Controller
         $apiKey = env('FOURSQUARE_API_TOKEN');
         $categoriesParam = implode(',', $fsqCategoryIds);
 
-        $response = Http::withHeaders([
-            'Authorization' => "Bearer {$apiKey}",
-            'X-Places-API-Version' => '2025-06-17',
-        ])->get('https://places-api.foursquare.com/places/search', [
+        $queryParams = [
             'categories' => $categoriesParam,
             'limit' => $limit,
             'sort' => 'POPULARITY',
-        ]);
+            'll' => $ll,
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$apiKey}",
+            'X-Places-API-Version' => '2025-06-17',
+        ])->get('https://places-api.foursquare.com/places/search', $queryParams);
 
         if ($response->successful()) {
             return response()->json([
-                'message' => 'Places fetched from Foursquare API by categories only',
+                'message' => 'Places fetched from Foursquare API by user categories and location',
                 'data' => $response->json()['results'] ?? [],
             ]);
         }

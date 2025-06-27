@@ -65,11 +65,9 @@ class StorePlacesController extends Controller
 
                     $latRounded = round($latitude, 5);
                     $lngRounded = round($longitude, 5);
+                    $latLongKey = "{$latRounded},{$lngRounded}";
 
-                    $exists = Location::whereRaw('LOWER(name) = ?', [strtolower($name)])
-                        ->whereRaw('ROUND(latitude, 5) = ?', [$latRounded])
-                        ->whereRaw('ROUND(longitude, 5) = ?', [$lngRounded])
-                        ->exists();
+                    $exists = Location::where('lat_long', $latLongKey)->exists();
 
                     if ($exists) {
                         continue;
@@ -83,18 +81,24 @@ class StorePlacesController extends Controller
                         $fsqCategoryId = $firstCategory['id'] ?? null;
                         $categoryName = $firstCategory['name'] ?? 'Unknown';
 
-                        $category = Category::firstOrCreate(
-                            ['fsq_category_id' => $fsqCategoryId],
-                            ['category' => $categoryName]
-                        );
+                        if ($fsqCategoryId !== null) {
+                            $category = Category::firstOrCreate(
+                                ['fsq_category_id' => $fsqCategoryId],
+                                ['category' => $categoryName]
+                            );
 
-                        $categoryId = $category->id;
+                            $categoryId = $category->id;
+                        } else {
+                            $category = Category::firstOrCreate(['category' => $categoryName]);
+                            $categoryId = $category->id;
+                        }
                     }
 
                     $location = Location::create([
                         'name' => $name,
                         'latitude' => $latitude,
                         'longitude' => $longitude,
+                        'lat_long' => $latLongKey,
                         'city_id' => $city->id,
                         'category_id' => $categoryId,
                     ]);

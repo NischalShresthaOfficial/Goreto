@@ -10,6 +10,7 @@ class Location extends Model
         'name',
         'latitude',
         'longitude',
+        'lat_long',
         'city_id',
         'category_id',
     ];
