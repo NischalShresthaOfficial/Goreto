@@ -2,12 +2,14 @@
 
 namespace App\Mail;
 
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class LoginNotificationMail extends Mailable
+class LoginNotificationMail extends Mailable implements ShouldQueue
 {
-    use SerializesModels;
+    use Queueable, SerializesModels;
 
     public $loginTime;
 
@@ -24,12 +26,9 @@ class LoginNotificationMail extends Mailable
 
         return $this->subject('Login Notification')
             ->view('emails.login_notification')
-            ->with([
-                'loginTime' => $this->loginTime,
-            ])
+            ->with(['loginTime' => $this->loginTime])
             ->withSwiftMessage(function ($message) use ($logoPath) {
-                $cid = $message->embedFromPath($logoPath);
-                $this->logoCid = $cid;
+                $this->logoCid = $message->embedFromPath($logoPath);
             });
     }
 }

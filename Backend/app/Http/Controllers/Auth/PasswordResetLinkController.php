@@ -25,7 +25,7 @@ class PasswordResetLinkController extends Controller
 
         $token = Password::createToken($user);
 
-        Mail::to($user->email)->send(new PasswordResetTokenMail($user, $token));
+        Mail::to($user->email)->queue(new PasswordResetTokenMail($user, $token));
 
         $systemEmail = config('mail.from.address');
 

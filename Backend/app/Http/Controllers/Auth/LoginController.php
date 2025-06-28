@@ -39,7 +39,7 @@ class LoginController extends Controller
 
         $loginTime = Carbon::now()->toDateTimeString();
 
-        Mail::to($user->email)->send(new LoginNotificationMail($loginTime));
+        Mail::to($user->email)->queue(new LoginNotificationMail($loginTime));
 
         $systemEmail = config('mail.from.address');
         $systemUser = User::where('email', $systemEmail)->first();

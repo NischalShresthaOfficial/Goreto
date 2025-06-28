@@ -39,7 +39,7 @@ class NewPasswordController extends Controller
                     'remember_token' => Str::random(60),
                 ])->save();
 
-                Mail::to($user->email)->send(new PasswordResetMail($user));
+                Mail::to($user->email)->queue(new PasswordResetMail($user));
 
                 $systemEmail = config('mail.from.address');
                 $systemUser = User::where('email', $systemEmail)->first();
