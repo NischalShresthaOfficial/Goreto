@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Places\PopularPlacesController;
 use App\Http\Controllers\Places\StorePlacesController;
@@ -12,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
+
+Route::post('/reset-password', [NewPasswordController::class, 'store']);
+Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
 
 Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
 
