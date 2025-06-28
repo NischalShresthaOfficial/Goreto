@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\LoginNotificationMail;
+use App\Models\EmailNotification;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +38,18 @@ class LoginController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         $loginTime = Carbon::now()->toDateTimeString();
+
         Mail::to($user->email)->send(new LoginNotificationMail($loginTime));
+
+        $systemEmail = config('mail.from.address');
+        $systemUser = User::where('email', $systemEmail)->first();
+
+        EmailNotification::create([
+            'title' => 'Login Notification',
+            'description' => 'Login occurred at '.$loginTime,
+            'sender_id' => $systemUser?->id,
+            'receiver_id' => $user->id,
+        ]);
 
         return response()->json([
             'message' => 'Login successful',

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Country;
+use App\Models\EmailNotification;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
@@ -43,6 +44,15 @@ class RegisterController extends Controller
         $user->assignRole('user');
 
         event(new Registered($user));
+
+        $systemUser = User::where('email', config('mail.from.address'))->first();
+
+        EmailNotification::create([
+            'title' => 'Registration Email Sent',
+            'description' => 'A verification email was sent to '.$user->email,
+            'sender_id' => $systemUser?->id,
+            'receiver_id' => $user->id,
+        ]);
 
         return response()->json([
             'message' => 'Registration successful. Please verify your email.',

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordResetMail;
+use App\Models\EmailNotification;
+use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +40,16 @@ class NewPasswordController extends Controller
                 ])->save();
 
                 Mail::to($user->email)->send(new PasswordResetMail($user));
+
+                $systemEmail = config('mail.from.address');
+                $systemUser = User::where('email', $systemEmail)->first();
+
+                EmailNotification::create([
+                    'title' => 'Password Reset Successful',
+                    'description' => 'Your password was successfully reset.',
+                    'sender_id' => $systemUser?->id,
+                    'receiver_id' => $user->id,
+                ]);
 
                 event(new PasswordReset($user));
             }
