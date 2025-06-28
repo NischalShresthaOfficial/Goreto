@@ -15,8 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/login', [LoginController::class, 'login']);
 
-// Route::post('/reset-password', [NewPasswordController::class, 'store']);
-// Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
+Route::post('/reset-password', [NewPasswordController::class, 'store']);
+Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
 
 Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
 
