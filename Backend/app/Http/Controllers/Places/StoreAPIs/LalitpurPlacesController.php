@@ -8,8 +8,9 @@ use App\Models\City;
 use App\Models\Location;
 use App\Models\LocationImage;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class LalitpurPlacesController extends Controller
 {
@@ -44,13 +45,13 @@ class LalitpurPlacesController extends Controller
             $response = Http::get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', $params);
             $data = $response->json();
 
-            if (!$response->successful() || !isset($data['results'])) {
+            if (! $response->successful() || ! isset($data['results'])) {
                 return response()->json(['message' => 'Failed to fetch places', 'error' => $data], 500);
             }
 
             foreach ($data['results'] as $place) {
                 $placeId = $place['place_id'];
-                if (!isset($allPlaces[$placeId])) {
+                if (! isset($allPlaces[$placeId])) {
                     $allPlaces[$placeId] = $place;
                 }
             }
@@ -71,12 +72,15 @@ class LalitpurPlacesController extends Controller
                 'category' => Str::title(str_replace('_', ' ', $categoryName)),
             ]);
 
+            $description = $this->getWikipediaDescription($name);
+
             $locationModel = Location::updateOrCreate(
                 ['place_id' => $placeId],
                 [
                     'name' => $name,
                     'latitude' => $lat,
                     'longitude' => $lng,
+                    'description' => $description,
                     'category_id' => $category->id,
                     'city_id' => $city->id,
                 ]
@@ -92,7 +96,7 @@ class LalitpurPlacesController extends Controller
                 ]);
 
                 if ($photoResponse->successful()) {
-                    $filename = 'locations/' . Str::uuid() . '.jpg';
+                    $filename = 'locations/'.Str::uuid().'.jpg';
                     Storage::disk('public')->put($filename, $photoResponse->body());
 
                     LocationImage::firstOrCreate([
@@ -107,5 +111,99 @@ class LalitpurPlacesController extends Controller
             'message' => 'Popular places across Lalitpur fetched and stored successfully.',
             'total_places' => count($allPlaces),
         ]);
+    }
+
+    private function getWikipediaDescription($name)
+    {
+        try {
+            $cleanName = preg_replace('/\(.+\)/', '', $name);
+            $cleanName = trim($cleanName);
+
+            $searchTerms = [
+                $cleanName,
+                $cleanName.' Nepal',
+                $cleanName.' Lalitpur',
+            ];
+
+            foreach ($searchTerms as $searchTerm) {
+                $description = $this->searchWikipedia($searchTerm);
+                if ($description) {
+                    return $description;
+                }
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error("Wikipedia description fetch failed for {$name}: ".$e->getMessage());
+
+            return null;
+        }
+    }
+
+    private function searchWikipedia($searchTerm)
+    {
+        try {
+            $searchResponse = Http::withHeaders([
+                'User-Agent' => 'YourAppName/1.0 (your-email@example.com)',
+                'Accept' => 'application/json',
+            ])->timeout(10)->get('https://en.wikipedia.org/api/rest_v1/page/summary/'.urlencode(str_replace(' ', '_', $searchTerm)));
+
+            if ($searchResponse->successful()) {
+                $data = $searchResponse->json();
+
+                Log::info("Wikipedia search result for '{$searchTerm}':", $data);
+
+                if (
+                    isset($data['extract']) &&
+                    ! empty($data['extract']) &&
+                    (! isset($data['type']) || $data['type'] !== 'disambiguation') &&
+                    $data['extract'] !== 'Coordinates: '
+                ) {
+                    return $data['extract'];
+                }
+            }
+
+            $searchApiResponse = Http::withHeaders([
+                'User-Agent' => 'YourAppName/1.0 (your-email@example.com)',
+                'Accept' => 'application/json',
+            ])->timeout(10)->get('https://en.wikipedia.org/w/api.php', [
+                'action' => 'query',
+                'format' => 'json',
+                'list' => 'search',
+                'srsearch' => $searchTerm,
+                'srlimit' => 1,
+            ]);
+
+            if ($searchApiResponse->successful()) {
+                $searchData = $searchApiResponse->json();
+
+                if (isset($searchData['query']['search'][0]['title'])) {
+                    $title = $searchData['query']['search'][0]['title'];
+
+                    $summaryResponse = Http::withHeaders([
+                        'User-Agent' => 'YourAppName/1.0 (your-email@example.com)',
+                        'Accept' => 'application/json',
+                    ])->timeout(10)->get('https://en.wikipedia.org/api/rest_v1/page/summary/'.urlencode(str_replace(' ', '_', $title)));
+
+                    if ($summaryResponse->successful()) {
+                        $summaryData = $summaryResponse->json();
+
+                        if (
+                            isset($summaryData['extract']) &&
+                            ! empty($summaryData['extract']) &&
+                            (! isset($summaryData['type']) || $summaryData['type'] !== 'disambiguation')
+                        ) {
+                            return $summaryData['extract'];
+                        }
+                    }
+                }
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            Log::error("Wikipedia API error for '{$searchTerm}': ".$e->getMessage());
+
+            return null;
+        }
     }
 }
