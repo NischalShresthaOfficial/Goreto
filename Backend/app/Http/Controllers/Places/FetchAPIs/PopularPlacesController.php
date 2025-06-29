@@ -20,8 +20,8 @@ class PopularPlacesController extends Controller
 
         $latitude = $request->query('latitude');
         $longitude = $request->query('longitude');
-        $radius = $request->query('radius');
-        $limit = $request->query('limit');
+        $radius = $request->query('radius', 500);
+        $limit = $request->query('limit', 5);
         $category = $request->query('category');
 
         $radiusInDegrees = $radius / 111000;
