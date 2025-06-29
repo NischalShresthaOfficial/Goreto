@@ -120,4 +120,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(PostReport::class);
     }
+
+    public function searchHistories()
+    {
+        return $this->hasMany(SearchHistory::class);
+    }
 }

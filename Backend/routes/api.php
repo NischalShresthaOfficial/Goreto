@@ -17,6 +17,7 @@ use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -72,5 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/location-reviews', [LocationReviewController::class, 'store']);
 
     Route::get('/location-reviews/{locationId}', [FetchLocationReviewController::class, 'fetchByLocationId']);
+
+    Route::get('/places/search', [SearchPlacesController::class, 'search']);
+
 
 });
