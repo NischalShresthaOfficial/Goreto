@@ -29,7 +29,7 @@ class UserCategoryController extends Controller
             ]);
         }
 
-        $limit = $request->query('limit', 10);
+        $limit = $request->query('limit', 20);
 
         $places = \App\Models\Location::with('locationImages', 'category')
             ->whereIn('category_id', $categoryIds)

@@ -13,8 +13,8 @@ class PopularPlacesController extends Controller
         $request->validate([
             'latitude' => ['required', 'numeric'],
             'longitude' => ['required', 'numeric'],
-            'radius' => ['nullable', 'integer', 'min:1', 'max:50000'],
-            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'radius' => ['nullable', 'integer', 'min:1', 'max:1000'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:20'],
             'category' => ['nullable', 'string'],
         ]);
 
