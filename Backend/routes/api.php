@@ -4,11 +4,17 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Places\PopularPlacesController;
-use App\Http\Controllers\Places\StorePlacesController;
-use App\Http\Controllers\Places\UserCategoryController;
+// use App\Http\Controllers\Places\PopularPlacesController;
+// use App\Http\Controllers\Places\StorePlacesController;
+// use App\Http\Controllers\Places\UserCategoryController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Places\LocationController;
+use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
+use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
+use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +24,20 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
 
-Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
+// Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
+
+// Route::post('/locations/popular', [LocationController::class, 'getPopularLocations']);
+
+Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
+
+Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
+
+Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
+
+Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
+
+
+
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
@@ -43,10 +62,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
 
-    Route::get('/popular-places', [PopularPlacesController::class, 'search']);
+    // Route::get('/popular-places', [PopularPlacesController::class, 'search']);
 
     Route::post('/categories', [CategoryController::class, 'store']);
 
-    Route::get('/user-category', [UserCategoryController::class, 'searchByUserCategoryOnly']);
+    // Route::get('/user-category', [UserCategoryController::class, 'searchByUserCategoryOnly']);
+
+    Route::get('/places-by-category', [UserCategoryController::class, 'fetchByUserCategories']);
 
 });

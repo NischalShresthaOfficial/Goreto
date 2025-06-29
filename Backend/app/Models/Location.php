@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Location extends Model
 {
     protected $fillable = [
+        'place_id',
         'name',
         'latitude',
         'longitude',
-        'lat_long',
         'city_id',
         'category_id',
     ];
