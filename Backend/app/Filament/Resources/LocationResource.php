@@ -9,6 +9,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -42,6 +43,13 @@ class LocationResource extends Resource
                     ->required()
                     ->numeric()
                     ->rule('between:-180,180'),
+
+                Textarea::make('description')
+                    ->label('Description')
+                    ->rows(5)
+                    ->maxLength(1000)
+                    ->required(false)
+                    ->columnSpanFull(),
 
                 Select::make('city_id')
                     ->label('City')
