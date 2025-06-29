@@ -37,10 +37,6 @@ class CategoryResource extends Resource
                         ->required()
                         ->maxLength(255)
                         ->label('Category Name'),
-                    TextInput::make('fsq_category_id')
-                        ->required()
-                        ->maxLength(255)
-                        ->label('Foursquare Category ID'),
                 ]),
             ]);
     }
@@ -51,10 +47,6 @@ class CategoryResource extends Resource
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
-                    ->sortable(),
-                TextColumn::make('fsq_category_id')
-                    ->label('Foursquare Category ID')
-                    ->searchable()
                     ->sortable(),
                 TextColumn::make('category')
                     ->label('Category Name')
