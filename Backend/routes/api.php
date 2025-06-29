@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
 use App\Http\Controllers\Places\LocationController;
+use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
@@ -17,7 +18,6 @@ use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -76,5 +76,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/places/search', [SearchPlacesController::class, 'search']);
 
+    Route::get('/places/search-history', [SearchPlacesController::class, 'fetchSearchHistory']);
 
 });

@@ -38,4 +38,20 @@ class SearchPlacesController extends Controller
             'data' => $results,
         ]);
     }
+
+    public function fetchSearchHistory(Request $request)
+    {
+        $limit = $request->input('limit', 10);
+
+        $history = SearchHistory::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
+
+        return response()->json([
+            'message' => 'User search history fetched successfully',
+            'count' => $history->count(),
+            'data' => $history,
+        ]);
+    }
 }
