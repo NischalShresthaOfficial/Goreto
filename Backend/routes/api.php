@@ -18,6 +18,8 @@ use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\Posts\CreatePostController;
+use App\Http\Controllers\Posts\FetchPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,4 +80,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/places/search-history', [SearchPlacesController::class, 'fetchSearchHistory']);
 
+     Route::prefix('posts')->group(function () {
+        // Create a new post
+        Route::post('/create', [CreatePostController::class, 'store']);
+
+        // Fetch own posts
+        Route::get('/my', [FetchPostController::class, 'myPosts']);
+
+        // Fetch posts by a specific user
+        Route::get('/user/{userId}', [FetchPostController::class, 'userPosts']);
+
+        // Fetch feed (all posts)
+        Route::get('/feed', [FetchPostController::class, 'feed']);
+    });
+
 });
+
+
