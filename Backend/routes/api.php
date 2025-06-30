@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 // use App\Http\Controllers\Places\PopularPlacesController;
 // use App\Http\Controllers\Places\StorePlacesController;
 // use App\Http\Controllers\Places\UserCategoryController;
+use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
 use App\Http\Controllers\Places\LocationController;
@@ -75,6 +76,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::get('/user-category', [UserCategoryController::class, 'searchByUserCategoryOnly']);
 
     Route::get('/places-by-category', [UserCategoryController::class, 'fetchByUserCategories']);
+
+    Route::get('/places/category', [CategoryPlacesController::class, 'fetchByCategory']);
 
     Route::post('/location-reviews', [LocationReviewController::class, 'store']);
 
