@@ -13,7 +13,9 @@ use App\Http\Controllers\Places\LocationController;
 use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\KavrepalanchowkPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
@@ -36,6 +38,10 @@ Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetch
 Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
 
 Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
+
+Route::post('/places/fetch-kavre', [KavrepalanchowkPlacesController::class, 'fetchKavrePopularPlaces']);
+
+Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwakotPopularPlaces']);
 
 Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
 
