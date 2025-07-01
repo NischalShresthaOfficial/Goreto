@@ -74,11 +74,21 @@ class LocationResource extends Resource
                             ->image()
                             ->required()
                             ->directory('location-images'),
+
+                        Select::make('status')
+                            ->label('Status')
+                            ->options([
+                                'verified' => 'Verified',
+                                'unverified' => 'Unverified',
+                            ])
+                            ->default('unverified')
+                            ->required(),
                     ])
-                    ->columns(1)
+                    ->columns(2)
                     ->label('Add Image')
                     ->collapsible()
                     ->collapsed(false),
+
             ]),
         ]);
     }

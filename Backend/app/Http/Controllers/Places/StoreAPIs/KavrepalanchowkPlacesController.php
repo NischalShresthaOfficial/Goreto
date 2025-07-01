@@ -18,7 +18,7 @@ class KavrepalanchowkPlacesController extends Controller
     {
         $apiKey = config('services.google_maps.key');
 
-        ini_set('max_execution_time', 300);
+        ini_set('max_execution_time', 600);
 
         $location = '27.6250,85.5520';
         $radius = 50000;
@@ -107,10 +107,16 @@ class KavrepalanchowkPlacesController extends Controller
                     $filename = 'locations/'.Str::uuid().'.jpg';
                     Storage::disk('public')->put($filename, $photoResponse->body());
 
-                    LocationImage::firstOrCreate([
-                        'location_id' => $locationModel->id,
-                        'image_path' => $filename,
-                    ]);
+                    LocationImage::firstOrCreate(
+                        [
+                            'location_id' => $locationModel->id,
+                            'image_path' => $filename,
+                        ],
+                        [
+                            'status' => 'verified',
+                        ]
+                    );
+
                 }
             }
         }

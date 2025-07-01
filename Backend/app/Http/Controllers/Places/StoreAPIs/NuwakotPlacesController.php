@@ -105,10 +105,16 @@ class NuwakotPlacesController extends Controller
                     $filename = 'locations/'.Str::uuid().'.jpg';
                     Storage::disk('public')->put($filename, $photoResponse->body());
 
-                    LocationImage::firstOrCreate([
-                        'location_id' => $locationModel->id,
-                        'image_path' => $filename,
-                    ]);
+                    LocationImage::firstOrCreate(
+                        [
+                            'location_id' => $locationModel->id,
+                            'image_path' => $filename,
+                        ],
+                        [
+                            'status' => 'verified',
+                        ]
+                    );
+
                 }
             }
         }
