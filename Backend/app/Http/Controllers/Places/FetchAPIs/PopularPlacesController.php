@@ -59,4 +59,26 @@ class PopularPlacesController extends Controller
             'data' => $locations,
         ]);
     }
+
+    public function fetchById($id)
+    {
+        $location = Location::with([
+            'locationImages' => function ($query) {
+                $query->where('status', 'verified');
+            },
+            'category',
+            'city',
+        ])->find($id);
+
+        if (! $location) {
+            return response()->json([
+                'message' => 'Location not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Location fetched successfully',
+            'data' => $location,
+        ]);
+    }
 }

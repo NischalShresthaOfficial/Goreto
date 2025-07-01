@@ -41,4 +41,26 @@ class CategoryPlacesController extends Controller
             'data' => $locations,
         ]);
     }
+
+    public function fetchById($id)
+    {
+        $location = Location::with(['verifiedImages', 'city', 'category'])->find($id);
+
+        if (! $location) {
+            return response()->json([
+                'message' => 'Location not found',
+            ], 404);
+        }
+
+        $location->locationImages = $location->verifiedImages->isNotEmpty()
+            ? $location->verifiedImages
+            : null;
+
+        unset($location->verifiedImages);
+
+        return response()->json([
+            'message' => 'Place fetched successfully',
+            'data' => $location,
+        ]);
+    }
 }

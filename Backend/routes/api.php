@@ -48,6 +48,8 @@ Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwa
 
 Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
 
+Route::get('/places/popular/{id}', [PopularPlacesController::class, 'fetchById']);
+
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
 
@@ -79,7 +81,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/places-by-category', [UserCategoryController::class, 'fetchByUserCategories']);
 
+    Route::get('/places-by-category/{id}', [UserCategoryController::class, 'fetchById']);
+
     Route::get('/places/category', [CategoryPlacesController::class, 'fetchByCategory']);
+
+    Route::get('/places/category/{id}', [CategoryPlacesController::class, 'fetchById']);
 
     Route::post('/location-reviews', [LocationReviewController::class, 'store']);
 
