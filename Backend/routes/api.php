@@ -20,6 +20,7 @@ use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
+use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -80,6 +81,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/places/category', [CategoryPlacesController::class, 'fetchByCategory']);
 
     Route::post('/location-reviews', [LocationReviewController::class, 'store']);
+
+    Route::post('/favourites', [FavouriteLocationController::class, 'add']);
+
+    Route::get('/favourites', [FavouriteLocationController::class, 'index']);
 
     Route::get('/location-reviews/{locationId}', [FetchLocationReviewController::class, 'fetchByLocationId']);
 
