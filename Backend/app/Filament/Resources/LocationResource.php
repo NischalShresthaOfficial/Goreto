@@ -88,7 +88,6 @@ class LocationResource extends Resource
                     ->label('Add Image')
                     ->collapsible()
                     ->collapsed(false),
-
             ]),
         ]);
     }

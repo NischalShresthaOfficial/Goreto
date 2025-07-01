@@ -11,6 +11,7 @@ use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
 use App\Http\Controllers\Places\LocationController;
+use App\Http\Controllers\Places\LocationImages\LocationImageController;
 use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
@@ -81,6 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/places/category', [CategoryPlacesController::class, 'fetchByCategory']);
 
     Route::post('/location-reviews', [LocationReviewController::class, 'store']);
+
+    Route::post('/location-images/{locationId}', [LocationImageController::class, 'store']);
 
     Route::post('/favourites', [FavouriteLocationController::class, 'add']);
 
