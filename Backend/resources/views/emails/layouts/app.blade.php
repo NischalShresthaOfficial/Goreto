@@ -6,62 +6,146 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #F7F8F9;
-            font-family: Arial, sans-serif;
+            background-color: #F0F0F0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             color: #333333;
         }
         .container {
             background-color: #ffffff;
-            max-width: 600px;
+            max-width: 500px;
             margin: 2rem auto;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             overflow: hidden;
-            border: 1px solid #ddd;
         }
         .header {
-            background-color: #FFB23F;
-            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #F4C430 0%, #E6A824 100%);
+            padding: 2rem;
             text-align: center;
+            position: relative;
         }
         .header img {
-            max-height: 60px;
-            margin-bottom: 0.5rem;
+            max-height: 80px;
+            margin-bottom: 1rem;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: #fff;
-            font-weight: 700;
+        .logo-placeholder {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
         }
         .content {
-            padding: 2rem;
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+        .welcome-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
         }
         .content p {
             font-size: 1rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
+            color: #555;
+        }
+        .content strong {
+            color: #333;
+        }
+        .content a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .content a:hover {
+            text-decoration: underline;
         }
         .footer {
-            background-color: #F7F8F9;
+            background-color: #f8f9fa;
             text-align: center;
-            padding: 1rem 2rem;
-            font-size: 0.875rem;
-            color: #777;
+            padding: 1.5rem 2rem;
+            font-size: 0.8rem;
+            color: #666;
+            border-top: 1px solid #e9ecef;
+        }
+        .social-links {
+            margin: 1rem 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 0.5rem;
+            text-decoration: none;
+        }
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .instagram { background-color: #E4405F; }
+        .twitter { background-color: #1DA1F2; }
+        .linkedin { background-color: #0077B5; }
+
+        /* Utility classes for content styling */
+        .highlight-box {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #F4C430;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #F4C430;
+            color: #333;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin: 1rem 0;
+        }
+        .btn:hover {
+            background-color: #E6A824;
+            text-decoration: none;
+        }
+        .signature {
+            margin-top: 2rem;
+            font-weight: 500;
+            color: #333;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ $message->embed(public_path('assets/logo.png')) }}" alt="{{ config('app.name') }} Logo">
-            <h1>@yield('header_title', config('app.name'))</h1>
+            @if(isset($message) && file_exists(public_path('assets/logo.png')))
+                <img src="{{ $message->embed(public_path('assets/logo.png')) }}" alt="{{ config('app.name') }} Logo">
+            @else
+                <div class="logo-placeholder">
+                    {{ strtoupper(substr(config('app.name'), 0, 1)) }}
+                </div>
+            @endif
         </div>
         <div class="content">
+            <h2 class="welcome-title">@yield('header_title', 'Welcome back to ' . config('app.name'))</h2>
             @yield('content')
         </div>
         <div class="footer">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+            <div class="social-links">
+                <a href="#"><span class="social-icon instagram"></span></a>
+                <a href="#"><span class="social-icon twitter"></span></a>
+                <a href="#"><span class="social-icon linkedin"></span></a>
+            </div>
+            <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
+            <p>Explore Experience Share</p>
         </div>
     </div>
 </body>
