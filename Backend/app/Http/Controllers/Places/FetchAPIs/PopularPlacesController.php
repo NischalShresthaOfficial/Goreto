@@ -26,16 +26,21 @@ class PopularPlacesController extends Controller
 
         $radiusInDegrees = $radius / 111000;
 
-        $query = Location::with('locationImages', 'category')
+        $query = Location::with([
+            'locationImages' => function ($query) {
+                $query->where('status', 'verified');
+            },
+            'category',
+        ])
             ->selectRaw('
-                *,
-                (6371000 * acos(
-                    cos(radians(?)) *
-                    cos(radians(latitude)) *
-                    cos(radians(longitude) - radians(?)) +
-                    sin(radians(?)) *
-                    sin(radians(latitude))
-                )) AS distance', [$latitude, $longitude, $latitude])
+            *,
+            (6371000 * acos(
+                cos(radians(?)) *
+                cos(radians(latitude)) *
+                cos(radians(longitude) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(latitude))
+            )) AS distance', [$latitude, $longitude, $latitude])
             ->having('distance', '<=', $radius)
             ->orderBy('distance')
             ->limit($limit);

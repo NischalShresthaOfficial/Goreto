@@ -31,6 +31,11 @@ class Location extends Model
         return $this->hasMany(LocationImage::class);
     }
 
+    public function verifiedImages()
+    {
+        return $this->hasMany(LocationImage::class)->where('status', 'verified');
+    }
+
     public function favouriteLocations()
     {
         return $this->hasMany(FavouriteLocation::class);
@@ -41,7 +46,7 @@ class Location extends Model
         return $this->hasMany(LocationReview::class);
     }
 
-     public function groupLocations()
+    public function groupLocations()
     {
         return $this->hasMany(GroupLocation::class);
     }

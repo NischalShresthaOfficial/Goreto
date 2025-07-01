@@ -18,12 +18,22 @@ class CategoryPlacesController extends Controller
         $categoryName = $request->query('category');
         $limit = $request->query('limit', 50);
 
-        $locations = Location::with(['locationImages', 'city', 'category'])
+        $locations = Location::with(['verifiedImages', 'city', 'category'])
             ->whereHas('category', function ($query) use ($categoryName) {
                 $query->where('category', 'LIKE', "%{$categoryName}%");
             })
             ->limit($limit)
             ->get();
+
+        $locations->transform(function ($location) {
+            $location->locationImages = $location->verifiedImages->isNotEmpty()
+                ? $location->verifiedImages
+                : null;
+
+            unset($location->verifiedImages);
+
+            return $location;
+        });
 
         return response()->json([
             'message' => 'Places fetched by category',

@@ -31,7 +31,9 @@ class UserCategoryController extends Controller
 
         $limit = $request->query('limit', 20);
 
-        $places = \App\Models\Location::with('locationImages', 'category')
+        $places = \App\Models\Location::with(['locationImages' => function ($query) {
+            $query->where('status', 'verified');
+        }, 'category'])
             ->whereIn('category_id', $categoryIds)
             ->limit($limit)
             ->get();
