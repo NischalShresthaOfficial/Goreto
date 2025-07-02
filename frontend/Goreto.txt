@@ -1,29 +1,50 @@
-Goreto
-
 lib/
 ├── core/
-│   ├── constants/
-│   ├── errors/
-│   ├── exceptions/
-│   ├── utils/
-│   └── services/          # For reusable services (e.g., Notifications, Location)
+│   ├── constants/             # App-wide constant values
+│   ├── errors/                # Custom error classes
+│   ├── exceptions/            # Exception handling
+│   ├── utils/                 # Helpers like media_query_helper.dart
+│   └── services/              # Reusable services (notifications, location, etc.)
+│
 ├── data/
 │   ├── models/
+│   │   └── story/             # e.g., story_item_model.dart
 │   ├── datasources/
-│   │   ├── remote/        # API service calls
-│   │   └── local/         # Isar/local DB handling
-│   ├── repositories/      # Implements domain layer contracts
-│   └── providers/         # API/state providers using Provider/ChangeNotifier
+│   │   ├── remote/            # API clients/services
+│   │   └── local/             # Isar/local DB or SharedPreferences
+│   ├── repositories/          # Implements abstract interfaces from domain
+│   └── providers/             # State management providers (non-feature specific)
+│
 ├── domain/
-│   ├── entities/          # Pure Dart business logic objects
-│   ├── repositories/      # Abstract interfaces (for clean architecture)
-│   └── usecases/          # Logic for single app use cases
+│   ├── entities/              # Business logic objects
+│   ├── repositories/          # Abstract contracts for data
+│   └── usecases/              # Application-specific use case logic
+│
 ├── features/
 │   ├── auth/
 │   │   ├── screens/
 │   │   ├── widgets/
 │   │   ├── providers/
 │   │   └── viewmodels/
+│
+│   ├── splash/
+│   │   ├── screens/
+│   │   │   └── splash_screen.dart
+│   │   ├── widgets/
+│   │   ├── providers/
+│   │   └── viewmodels/
+│
+│   ├── storyboard/
+│   │   ├── screens/
+│   │   │   └── story_board.dart
+│   │   ├── widgets/
+│   │   │   └── story_card.dart
+│   │   ├── providers/
+│   │   │   └── story_board_provider.dart
+│   │   ├── animations/
+│   │   │   └── story_board_animator.dart
+│   │   └── viewmodels/
+│
 │   ├── maps/
 │   ├── planner/
 │   ├── reviews/
@@ -31,13 +52,13 @@ lib/
 │   ├── weather/
 │   ├── blog/
 │   └── chat/
+│
 ├── presentation/
-│   ├── screens/           # Generic UI screens that combine feature widgets
-│   ├── widgets/           # Common reusable widgets
-│   └── themes/
-├── l10n/                  # Localization files
-├── routes/                # App routing (go_router or Navigator)
+│   ├── screens/               # Generic layout or composable UI (non-feature-specific)
+│   ├── widgets/               # App-wide reusable widgets
+│   └── themes/                # Light/dark themes, text styles, etc.
+│
+├── l10n/                      # Localization (arb files)
+├── routes/                    # Navigation setup (go_router or Navigator 2.0)
 ├── main.dart
-└── bootstrap.dart         # Entry setup (ProviderScope, bindings, etc.)
-
-
+└── bootstrap.dart             # App initialization: ProviderScope, env config, etc.
