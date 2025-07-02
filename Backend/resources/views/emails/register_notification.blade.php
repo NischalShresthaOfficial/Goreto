@@ -14,8 +14,6 @@
         <h2 style="letter-spacing: 4px;">{{ $token }}</h2>
     </div>
 
-    <p>This code will expire in 10 minutes. Please verify your email address to activate your account.</p>
-
     <p>If you did not initiate this registration, you can ignore this email.</p>
 
     <div class="signature">
