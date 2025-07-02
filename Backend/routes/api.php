@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -23,6 +24,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [RegisterController::class, 'register']);
+Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::post('/reset-password', [NewPasswordController::class, 'store']);

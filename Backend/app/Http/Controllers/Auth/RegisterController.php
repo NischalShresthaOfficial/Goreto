@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\RegisterNotificationMail;
 use App\Models\Country;
 use App\Models\EmailNotification;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
 
@@ -33,17 +34,20 @@ class RegisterController extends Controller
 
         $role = Role::where('name', 'user')->first();
 
+        $token = random_int(100000, 999999);
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'country_id' => $country?->id,
             'role_id' => $role->id,
+            'email_verification_token' => $token,
         ]);
 
-        $user->assignRole('user');
+        Mail::to($user->email)->queue(new RegisterNotificationMail($user, $token));
 
-        event(new Registered($user));
+        $user->assignRole('user');
 
         $systemUser = User::where('email', config('mail.from.address'))->first();
 
