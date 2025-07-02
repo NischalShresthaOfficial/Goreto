@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Places\CategoryAPIs;
 
 use App\Http\Controllers\Controller;
+use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\Location;
 
 class UserCategoryController extends Controller
 {
@@ -17,6 +17,13 @@ class UserCategoryController extends Controller
         if (! $user) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
+
+        $request->validate([
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
+
+        $limit = $request->query('limit', 20);
 
         $categoryIds = DB::table('user_categories')
             ->where('user_id', $user->id)
@@ -30,19 +37,23 @@ class UserCategoryController extends Controller
             ]);
         }
 
-        $limit = $request->query('limit', 20);
-
-        $places = \App\Models\Location::with(['locationImages' => function ($query) {
-            $query->where('status', 'verified');
-        }, 'category'])
+        $places = Location::with([
+            'locationImages' => function ($query) {
+                $query->where('status', 'verified');
+            },
+            'category',
+        ])
             ->whereIn('category_id', $categoryIds)
-            ->limit($limit)
-            ->get();
+            ->paginate($limit);
 
         return response()->json([
             'message' => 'Places fetched based on user categories',
+            'total' => $places->total(),
+            'per_page' => $places->perPage(),
+            'current_page' => $places->currentPage(),
+            'last_page' => $places->lastPage(),
             'count' => $places->count(),
-            'data' => $places,
+            'data' => $places->items(),
         ]);
     }
 

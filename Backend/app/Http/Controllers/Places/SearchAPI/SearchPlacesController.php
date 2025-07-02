@@ -41,17 +41,25 @@ class SearchPlacesController extends Controller
 
     public function fetchSearchHistory(Request $request)
     {
+        $request->validate([
+            'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
+        ]);
+
         $limit = $request->input('limit', 10);
 
         $history = SearchHistory::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
-            ->limit($limit)
-            ->get();
+            ->paginate($limit);
 
         return response()->json([
             'message' => 'User search history fetched successfully',
+            'total' => $history->total(),
+            'per_page' => $history->perPage(),
+            'current_page' => $history->currentPage(),
+            'last_page' => $history->lastPage(),
             'count' => $history->count(),
-            'data' => $history,
+            'data' => $history->items(),
         ]);
     }
 }

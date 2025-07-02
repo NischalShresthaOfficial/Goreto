@@ -13,19 +13,20 @@ class CategoryPlacesController extends Controller
         $request->validate([
             'category' => ['required', 'string'],
             'limit' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page' => ['nullable', 'integer', 'min:1'],
         ]);
 
         $categoryName = $request->query('category');
         $limit = $request->query('limit', 50);
 
-        $locations = Location::with(['verifiedImages', 'city', 'category'])
+        $query = Location::with(['verifiedImages', 'city', 'category'])
             ->whereHas('category', function ($query) use ($categoryName) {
                 $query->where('category', 'LIKE', "%{$categoryName}%");
-            })
-            ->limit($limit)
-            ->get();
+            });
 
-        $locations->transform(function ($location) {
+        $locations = $query->paginate($limit);
+
+        $transformed = $locations->getCollection()->transform(function ($location) {
             $location->locationImages = $location->verifiedImages->isNotEmpty()
                 ? $location->verifiedImages
                 : null;
@@ -35,10 +36,16 @@ class CategoryPlacesController extends Controller
             return $location;
         });
 
+        $locations->setCollection($transformed);
+
         return response()->json([
             'message' => 'Places fetched by category',
+            'total' => $locations->total(),
+            'per_page' => $locations->perPage(),
+            'current_page' => $locations->currentPage(),
+            'last_page' => $locations->lastPage(),
             'count' => $locations->count(),
-            'data' => $locations,
+            'data' => $locations->items(),
         ]);
     }
 

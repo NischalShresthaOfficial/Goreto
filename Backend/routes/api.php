@@ -19,7 +19,6 @@ use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,42 +29,28 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
 
-Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
-
-Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
-
-Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
-
-Route::post('/places/fetch-kavre', [KavrepalanchowkPlacesController::class, 'fetchKavrePopularPlaces']);
-
-Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwakotPopularPlaces']);
-
-Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
-
-Route::get('/places/popular/{id}', [PopularPlacesController::class, 'fetchById']);
-
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-
-    return response()->json(['message' => 'Email verified successfully']);
-})->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
-
-Route::post('/email/verification-notification', function (Request $request) {
-    if ($request->user()->hasVerifiedEmail()) {
-        return response()->json(['message' => 'Already verified']);
-    }
-
-    $request->user()->sendEmailVerificationNotification();
-
-    return response()->json(['message' => 'Verification link sent!']);
-})->middleware(['auth:sanctum', 'throttle:6,1'])->name('verification.send');
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
+    Route::middleware(['auth:sanctum', 'role:super_admin'])->group(function () {
+        Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
+
+        Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
+
+        Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
+
+        Route::post('/places/fetch-kavre', [KavrepalanchowkPlacesController::class, 'fetchKavrePopularPlaces']);
+
+        Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwakotPopularPlaces']);
+    });
+
     Route::post('/logout', [LoginController::class, 'logout']);
+
+    Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
+
+    Route::get('/places/popular/{id}', [PopularPlacesController::class, 'fetchById']);
 
     Route::post('/categories', [CategoryController::class, 'store']);
 

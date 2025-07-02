@@ -14,7 +14,7 @@ class PopularPlacesController extends Controller
             'latitude' => ['required', 'numeric'],
             'longitude' => ['required', 'numeric'],
             'radius' => ['nullable', 'integer', 'min:1', 'max:50000'],
-            'limit' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:10'],
             'category' => ['nullable', 'string'],
         ]);
 
@@ -42,8 +42,7 @@ class PopularPlacesController extends Controller
                 sin(radians(latitude))
             )) AS distance', [$latitude, $longitude, $latitude])
             ->having('distance', '<=', $radius)
-            ->orderBy('distance')
-            ->limit($limit);
+            ->orderBy('distance');
 
         if ($category) {
             $query->whereHas('category', function ($q) use ($category) {
@@ -51,13 +50,18 @@ class PopularPlacesController extends Controller
             });
         }
 
-        $locations = $query->get();
+        $locations = $query->paginate($limit);
 
         return response()->json([
             'message' => 'Popular places fetched from local database',
+            'total' => $locations->total(),
+            'per_page' => $locations->perPage(),
+            'current_page' => $locations->currentPage(),
+            'last_page' => $locations->lastPage(),
             'count' => $locations->count(),
-            'data' => $locations,
+            'data' => $locations->items(),
         ]);
+
     }
 
     public function fetchById($id)

@@ -28,19 +28,34 @@ class FavouriteLocationController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
+        $limit = $request->query('limit', 10);
+
         $favourites = FavouriteLocation::with(['location.locationImages', 'location.city', 'location.category'])
             ->where('user_id', $user->id)
-            ->get()
-            ->pluck('location');
+            ->paginate($limit);
+
+        $locations = $favourites->getCollection()->pluck('location');
+
+        $paginatedLocations = new \Illuminate\Pagination\LengthAwarePaginator(
+            $locations,
+            $favourites->total(),
+            $favourites->perPage(),
+            $favourites->currentPage(),
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return response()->json([
             'message' => 'Favourite locations fetched successfully.',
-            'count' => $favourites->count(),
-            'data' => $favourites,
+            'total' => $paginatedLocations->total(),
+            'per_page' => $paginatedLocations->perPage(),
+            'current_page' => $paginatedLocations->currentPage(),
+            'last_page' => $paginatedLocations->lastPage(),
+            'count' => $paginatedLocations->count(),
+            'data' => $paginatedLocations->items(),
         ]);
     }
 }

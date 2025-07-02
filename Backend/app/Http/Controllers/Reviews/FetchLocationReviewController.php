@@ -10,19 +10,25 @@ class FetchLocationReviewController extends Controller
 {
     public function fetchByLocationId(Request $request, $locationId)
     {
-        if (!is_numeric($locationId)) {
+        if (! is_numeric($locationId)) {
             return response()->json(['message' => 'Invalid location ID'], 400);
         }
+
+        $limit = $request->query('limit', 10);
 
         $reviews = LocationReview::with('user')
             ->where('location_id', $locationId)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate($limit);
 
         return response()->json([
             'message' => 'Reviews fetched successfully',
+            'total' => $reviews->total(),
+            'per_page' => $reviews->perPage(),
+            'current_page' => $reviews->currentPage(),
+            'last_page' => $reviews->lastPage(),
             'count' => $reviews->count(),
-            'data' => $reviews,
+            'data' => $reviews->items(),
         ]);
     }
 }
