@@ -4,13 +4,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
-// use App\Http\Controllers\Places\PopularPlacesController;
-// use App\Http\Controllers\Places\StorePlacesController;
-// use App\Http\Controllers\Places\UserCategoryController;
 use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
-use App\Http\Controllers\Places\LocationController;
 use App\Http\Controllers\Places\LocationImages\LocationImageController;
 use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
@@ -31,10 +27,6 @@ Route::post('/login', [LoginController::class, 'login']);
 
 Route::post('/reset-password', [NewPasswordController::class, 'store']);
 Route::post('/reset-password/token', [PasswordResetLinkController::class, 'store']);
-
-// Route::post('/store-places', [StorePlacesController::class, 'fetchAndStore']);
-
-// Route::post('/locations/popular', [LocationController::class, 'getPopularLocations']);
 
 Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
 
@@ -73,11 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
 
-    // Route::get('/popular-places', [PopularPlacesController::class, 'search']);
-
     Route::post('/categories', [CategoryController::class, 'store']);
-
-    // Route::get('/user-category', [UserCategoryController::class, 'searchByUserCategoryOnly']);
 
     Route::get('/places-by-category', [UserCategoryController::class, 'fetchByUserCategories']);
 
