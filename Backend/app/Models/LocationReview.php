@@ -9,6 +9,7 @@ class LocationReview extends Model
     protected $fillable = [
         'review',
         'rating',
+        'average_rating',
         'user_id',
         'location_id',
     ];

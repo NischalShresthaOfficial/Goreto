@@ -21,8 +21,11 @@ class FetchLocationReviewController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate($limit);
 
+        $averageRating = LocationReview::where('location_id', $locationId)->avg('rating');
+
         return response()->json([
             'message' => 'Reviews fetched successfully',
+            'average_rating' => $averageRating ? round($averageRating, 2) : null,
             'total' => $reviews->total(),
             'per_page' => $reviews->perPage(),
             'current_page' => $reviews->currentPage(),
