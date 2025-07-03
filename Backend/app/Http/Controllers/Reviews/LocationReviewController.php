@@ -28,6 +28,16 @@ class LocationReviewController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
+        $existingReview = LocationReview::where('user_id', $user->id)
+            ->where('location_id', $request->location_id)
+            ->first();
+
+        if ($existingReview) {
+            return response()->json([
+                'message' => 'You have already reviewed this location.',
+            ], 409);
+        }
+
         $review = LocationReview::create([
             'user_id' => $user->id,
             'location_id' => $request->location_id,
