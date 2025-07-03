@@ -35,7 +35,7 @@ return [
 
     // 'allowed_methods' => ['*'],
 
-    // 'allowed_origins' => ['http://127.0.0.1:5500'], // Add your frontend origin here
+    // 'allowed_origins' => ['http://127.0.0.1:5500'],
 
     // 'allowed_headers' => ['*'],
 

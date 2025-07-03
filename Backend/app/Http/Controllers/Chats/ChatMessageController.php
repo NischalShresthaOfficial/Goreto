@@ -59,4 +59,31 @@ class ChatMessageController extends Controller
             'data' => $message,
         ]);
     }
+
+    public function fetchMessages(Request $request, $chatId)
+    {
+        $userId = auth()->id();
+        $isParticipant = UserChat::where('chat_id', $chatId)
+            ->where('user_id', $userId)
+            ->exists();
+
+        if (! $isParticipant) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $perPage = 20;
+
+        $messages = ChatMessage::where('chat_id', $chatId)
+            ->orderBy('sent_at', 'asc')
+            ->paginate($perPage);
+
+        return response()->json([
+            'chat_id' => $chatId,
+            'messages' => $messages->items(),
+            'current_page' => $messages->currentPage(),
+            'last_page' => $messages->lastPage(),
+            'per_page' => $messages->perPage(),
+            'total' => $messages->total(),
+        ]);
+    }
 }
