@@ -131,4 +131,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(UserLocation::class);
     }
+
+    public function chats()
+    {
+        return $this->belongsToMany(Chat::class, 'chat_user', 'user_id', 'chat_id')
+            ->using(UserChat::class)
+            ->withTimestamps();
+    }
 }

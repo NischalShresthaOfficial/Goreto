@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Chats;
+
+use App\Events\MessageSent;
+use App\Http\Controllers\Controller;
+use App\Models\ChatMessage;
+use App\Models\UserChat;
+use App\Notifications\ChatPushNotification;
+use Illuminate\Http\Request;
+
+class ChatMessageController extends Controller
+{
+    public function store(Request $request)
+    {
+        $request->validate([
+            'chat_id' => 'required|exists:chats,id',
+            'messages' => 'required|string',
+        ]);
+
+        $senderId = auth()->id();
+
+        $isParticipant = \App\Models\UserChat::where('chat_id', $request->chat_id)
+            ->where('user_id', $senderId)
+            ->exists();
+
+        if (! $isParticipant) {
+            return response()->json([
+                'message' => 'You are not authorized to send messages in this chat.',
+            ], 403);
+        }
+
+        $message = ChatMessage::create([
+            'chat_id' => $request->chat_id,
+            'messages' => $request->messages,
+            'sent_by' => $senderId,
+            'sent_at' => now(),
+        ]);
+
+        broadcast(new MessageSent($message))->toOthers();
+
+        $recipientIds = UserChat::where('chat_id', $request->chat_id)
+            ->where('user_id', '!=', $senderId)
+            ->pluck('user_id');
+
+        foreach ($recipientIds as $recipientId) {
+            $recipient = \App\Models\User::find($recipientId);
+            if ($recipient) {
+                $recipient->notify(new ChatPushNotification(
+                    'New Message',
+                    $request->messages,
+                    $recipient->id
+                ));
+            }
+        }
+
+        return response()->json([
+            'message' => 'Message sent and notified',
+            'data' => $message,
+        ]);
+    }
+}

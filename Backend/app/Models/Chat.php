@@ -22,4 +22,11 @@ class Chat extends Model
     {
         return $this->hasMany(ChatMessage::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'chat_user', 'chat_id', 'user_id')
+            ->using(UserChat::class)
+            ->withTimestamps();
+    }
 }

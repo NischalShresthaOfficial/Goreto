@@ -18,6 +18,8 @@
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.10.1",
         "noxoua/filament-activity-log": "^2.2",
+        "pusher/pusher-php-server": "^7.2",
+        "pusher/pusher-push-notifications": "^2.0",
         "spatie/laravel-permission": "^6.20"
     },
     "require-dev": {
