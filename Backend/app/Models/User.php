@@ -2,19 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\UserCategory;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasRoles, HasApiTokens, LogsActivity, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, LogsActivity, Notifiable;
 
     protected $fillable = [
         'name',
@@ -22,6 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'email_verified_at',
         'email_verification_token',
+        'activity_status',
         'country_id',
         'role_id',
     ];
@@ -125,5 +125,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function searchHistories()
     {
         return $this->hasMany(SearchHistory::class);
+    }
+
+    public function userLocation()
+    {
+        return $this->hasOne(UserLocation::class);
     }
 }

@@ -5,6 +5,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Chats\NearbyActiveUsersController;
+use App\Http\Controllers\Chats\UserActivityStatusController;
+use App\Http\Controllers\Chats\UserLocationController;
 use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
@@ -76,4 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/places/search-history', [SearchPlacesController::class, 'fetchSearchHistory']);
 
+    Route::patch('/activity-status', [UserActivityStatusController::class, 'updateActivityStatus']);
+    Route::post('/user-location', [UserLocationController::class, 'updateLocation']);
+    Route::post('/nearby-users', [NearbyActiveUsersController::class, 'fetchNearbyOnlineUsers']);
 });
