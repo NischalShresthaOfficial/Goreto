@@ -15,7 +15,7 @@ class CreatePostController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'caption' => 'nullable|string',
+            'description' => 'nullable|string',
             'location_id' => 'nullable|exists:locations,id',
             'media' => 'required|array',
             'media.*' => 'required|file|mimes:jpeg,png,jpg,mp4|max:10240',
@@ -25,23 +25,19 @@ class CreatePostController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-
         $post = Post::create([
             'user_id' => Auth::id(),
-            'caption' => $request->caption,
+            'description' => $request->description,
         ]);
-
 
         foreach ($request->file('media') as $file) {
             $path = $file->store('posts', 'public');
             PostContent::create([
                 'post_id' => $post->id,
-                'media_path' => $path,
-                'media_type' => $file->getClientMimeType(),
+                'content_path' => $path,
             ]);
         }
 
-    
         if ($request->location_id) {
             PostLocation::create([
                 'post_id' => $post->id,
@@ -49,6 +45,9 @@ class CreatePostController extends Controller
             ]);
         }
 
-        return response()->json(['message' => 'Post created successfully', 'post' => $post], 201);
+        return response()->json([
+            'message' => 'Post created successfully',
+            'post' => $post->load('postContents', 'postLocations'),
+        ], 201);
     }
 }

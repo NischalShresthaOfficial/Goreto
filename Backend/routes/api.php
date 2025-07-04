@@ -81,16 +81,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/places/search-history', [SearchPlacesController::class, 'fetchSearchHistory']);
 
      Route::prefix('posts')->group(function () {
-        // Create a new post
         Route::post('/create', [CreatePostController::class, 'store']);
-
-        // Fetch own posts
         Route::get('/my', [FetchPostController::class, 'myPosts']);
-
-        // Fetch posts by a specific user
         Route::get('/user/{userId}', [FetchPostController::class, 'userPosts']);
-
-        // Fetch feed (all posts)
         Route::get('/feed', [FetchPostController::class, 'feed']);
     });
 
