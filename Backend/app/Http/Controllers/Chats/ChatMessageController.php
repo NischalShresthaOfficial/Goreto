@@ -74,7 +74,7 @@ class ChatMessageController extends Controller
         $perPage = 20;
 
         $messages = ChatMessage::where('chat_id', $chatId)
-            ->orderBy('sent_at', 'asc')
+            ->orderBy('sent_at', 'desc')
             ->paginate($perPage);
 
         return response()->json([
