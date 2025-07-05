@@ -16,7 +16,7 @@ class WeatherController extends Controller
             return response()->json(['message' => 'City not found'], 404);
         }
 
-        $apiKey = env('OPENWEATHERMAP_API_KEY');
+        $apiKey = env('OPENWEATHERMAP_KEY');
         $cityName = $city->name;
 
         $url = "https://api.openweathermap.org/data/2.5/weather?q={$cityName}&appid={$apiKey}&units=metric";
