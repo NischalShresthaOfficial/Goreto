@@ -43,4 +43,8 @@ return [
         'key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    'openweathermap' => [
+        'key' => env('OPENWEATHERMAP_KEY'),
+    ],
+
 ];

@@ -24,6 +24,7 @@ use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
+use App\Http\Controllers\Weather\WeatherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -94,4 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/group-chats/info/{chatId}', [ChatController::class, 'getGroupChatInfo']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
+
+    Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
 });
