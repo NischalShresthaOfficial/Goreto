@@ -86,6 +86,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/nearby-users', [NearbyActiveUsersController::class, 'fetchNearbyOnlineUsers']);
     Route::post('/chats/one-on-one', [ChatController::class, 'createOrGetOneOnOne']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
-      Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
-
+    Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
 });
