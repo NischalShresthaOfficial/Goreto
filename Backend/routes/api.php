@@ -85,6 +85,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user-location', [UserLocationController::class, 'updateLocation']);
     Route::post('/nearby-users', [NearbyActiveUsersController::class, 'fetchNearbyOnlineUsers']);
     Route::post('/chats/one-on-one', [ChatController::class, 'createOrGetOneOnOne']);
+    Route::post('/chats/group-chats', [ChatController::class, 'createGroupChat']);
+    Route::get('/group-chats/members/{chatId}', [ChatController::class, 'viewMembers']);
+    Route::post('/group-chats/add-member/{chatId}', [ChatController::class, 'addMember']);
+    Route::post('/group-chats/remove-member/{chatId}', [ChatController::class, 'removeMember']);
+    Route::delete('/group-chats/{chatId}', [ChatController::class, 'deleteGroupChat']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
 });
