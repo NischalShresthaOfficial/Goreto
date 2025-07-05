@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -48,15 +49,22 @@ class ChatController extends Controller
             'name' => 'required|string|max:255',
             'user_ids' => 'required|array|min:1',
             'user_ids.*' => 'exists:users,id|different:'.auth()->id(),
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $currentUserId = auth()->id();
 
         $userIds = array_unique(array_merge([$currentUserId], $request->user_ids));
 
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('group_images', 'public');
+        }
+
         $chat = Chat::create([
             'name' => $request->name,
             'is_group' => true,
+            'image_path' => $imagePath,
             'created_by' => $currentUserId,
         ]);
 
@@ -155,6 +163,58 @@ class ChatController extends Controller
 
         return response()->json([
             'message' => 'Group chat deleted successfully',
+        ]);
+    }
+
+    public function editGroupChat(Request $request, $chatId)
+    {
+        $chat = Chat::where('id', $chatId)->where('is_group', true)->firstOrFail();
+
+        if ((int) $chat->created_by !== (int) auth()->id()) {
+            return response()->json(['message' => 'Only group owner can edit the group'], 403);
+        }
+
+        $request->validate([
+            'name' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->filled('name')) {
+            $chat->name = $request->name;
+        }
+
+        if ($request->hasFile('image')) {
+            if ($chat->image_path) {
+                Storage::disk('public')->delete($chat->image_path);
+            }
+
+            $imagePath = $request->file('image')->store('group_images', 'public');
+            $chat->image_path = $imagePath;
+        }
+
+        $chat->save();
+
+        return response()->json([
+            'message' => 'Group chat updated successfully',
+            'chat' => $chat->load('users'),
+            'image_url' => $chat->image_path ? asset('storage/'.$chat->image_path) : null,
+        ]);
+    }
+
+    public function getGroupChatInfo($chatId)
+    {
+        $chat = Chat::where('id', $chatId)
+            ->where('is_group', true)
+            ->with('users:id,name,email')
+            ->firstOrFail();
+        if (! $chat->users()->where('user_id', auth()->id())->exists()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'chat_id' => $chat->id,
+            'name' => $chat->name,
+            'image_url' => $chat->image_path ? asset('storage/'.$chat->image_path) : null,
         ]);
     }
 }

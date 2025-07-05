@@ -90,6 +90,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/group-chats/add-member/{chatId}', [ChatController::class, 'addMember']);
     Route::post('/group-chats/remove-member/{chatId}', [ChatController::class, 'removeMember']);
     Route::delete('/group-chats/{chatId}', [ChatController::class, 'deleteGroupChat']);
+    Route::post('/group-chats/edit/{chatId}', [ChatController::class, 'editGroupChat']);
+    Route::get('/group-chats/info/{chatId}', [ChatController::class, 'getGroupChatInfo']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
 });

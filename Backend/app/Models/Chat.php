@@ -10,6 +10,7 @@ class Chat extends Model
         'name',
         'is_group',
         'created_by',
+        'image_path',
         'created_at',
     ];
 
