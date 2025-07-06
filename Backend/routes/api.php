@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Calls\CallController;
 use App\Http\Controllers\Chats\ChatController;
 use App\Http\Controllers\Chats\ChatMessageController;
 use App\Http\Controllers\Chats\NearbyActiveUsersController;
@@ -97,4 +98,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
 
     Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
+
+    Route::post('/call/initiate', [CallController::class, 'initiate']);
+    Route::post('/call/offer', [CallController::class, 'sendOffer']);
+    Route::post('/call/answer', [CallController::class, 'sendAnswer']);
+    Route::post('/call/ice-candidate', [CallController::class, 'sendIceCandidate']);
+    Route::post('/call/end', [CallController::class, 'end']);
 });

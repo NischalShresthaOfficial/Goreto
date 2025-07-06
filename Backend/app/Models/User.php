@@ -143,4 +143,14 @@ class User extends Authenticatable implements MustVerifyEmail
             ->using(UserChat::class)
             ->withTimestamps();
     }
+
+    public function callsMade()
+    {
+        return $this->hasMany(Call::class);
+    }
+
+    public function callsReceived()
+    {
+        return $this->hasMany(Call::class);
+    }
 }
