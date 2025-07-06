@@ -16,6 +16,7 @@ class CreatePostController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'description' => 'nullable|string',
+            'title' => 'nullable|string',
             'location_id' => 'nullable|exists:locations,id',
             'media' => 'required|array',
             'media.*' => 'required|file|mimes:jpeg,png,jpg,mp4|max:10240',
@@ -28,6 +29,7 @@ class CreatePostController extends Controller
         $post = Post::create([
             'user_id' => Auth::id(),
             'description' => $request->description,
+            'title' => $request->title,
         ]);
 
         foreach ($request->file('media') as $file) {
