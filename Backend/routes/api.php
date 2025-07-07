@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 // use App\Http\Controllers\Places\PopularPlacesController;
 // use App\Http\Controllers\Places\StorePlacesController;
 // use App\Http\Controllers\Places\UserCategoryController;
@@ -63,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);
+    Route::post('/change-password', [ChangePasswordController::class, 'update']);
 
     // Route::get('/popular-places', [PopularPlacesController::class, 'search']);
 

@@ -12,6 +12,10 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\UserCategory;
 
+/**
+ * @method bool save(array $options = [])
+ * @method bool update(array $attributes = [], array $options = [])
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, HasRoles, HasApiTokens, LogsActivity, Notifiable;
