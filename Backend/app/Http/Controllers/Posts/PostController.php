@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostContent;
 use App\Models\PostLocation;
+use App\Models\PostReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,7 @@ class PostController extends Controller
         $posts = Post::whereHas('postCategory', function ($query) use ($userCategoryIds) {
             $query->whereIn('category_id', $userCategoryIds);
         })
+            ->where('user_id', '!=', $user->id)
             ->with(['postCategory.category', 'postContents', 'postLocations.location'])
             ->paginate(10);
 
@@ -242,5 +244,48 @@ class PostController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function storeReview(Request $request, $postId)
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'No authenticated user found'], 401);
+        }
+
+        $request->validate([
+            'review' => 'required|string|max:1000',
+        ]);
+
+        $post = Post::find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        $review = PostReview::create([
+            'review' => $request->review,
+            'user_id' => $user->id,
+            'post_id' => $postId,
+        ]);
+
+        return response()->json([
+            'message' => 'Review submitted successfully.',
+            'review' => $review,
+        ], 201);
+    }
+
+    public function fetchReviews($postId)
+    {
+        $post = Post::find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        $reviews = $post->postReviews()->with('user:id,name,email')->paginate(10);
+
+        return response()->json($reviews);
     }
 }
