@@ -288,6 +288,36 @@ class PostController extends Controller
         ], 201);
     }
 
+    public function editReview(Request $request, $postId, $reviewId)
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'No authenticated user found'], 401);
+        }
+
+        $request->validate([
+            'review' => 'required|string|max:1000',
+        ]);
+
+        $review = PostReview::where('id', $reviewId)
+            ->where('post_id', $postId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (! $review) {
+            return response()->json(['error' => 'Review not found or access denied'], 404);
+        }
+
+        $review->review = $request->review;
+        $review->save();
+
+        return response()->json([
+            'message' => 'Review updated successfully.',
+            'review' => $review,
+        ]);
+    }
+
     public function fetchReviews($postId)
     {
         $post = Post::find($postId);
@@ -303,7 +333,6 @@ class PostController extends Controller
 
     public function fetchReviewById($postId, $reviewId)
     {
-
         $review = PostReview::where('post_id', $postId)
             ->where('id', $reviewId)
             ->with('user:id,name,email')

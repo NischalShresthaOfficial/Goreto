@@ -21,6 +21,7 @@ use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\KavrepalanchowkPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
+use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
@@ -113,6 +114,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts/{postId}', [PostController::class, 'editPost']);
     Route::delete('/posts/{postId}', [PostController::class, 'deletePost']);
     Route::post('/post-reviews/{postId}', [PostController::class, 'storeReview']);
+    Route::put('/post-reviews/{postId}/{reviewId}', [PostController::class, 'editReview']);
     Route::get('/post-reviews/{postId}', [PostController::class, 'fetchReviews']);
     Route::get('/post-reviews/{postId}/{reviewId}', [PostController::class, 'fetchReviewById']);
+
+    Route::post('/post-bookmarks/{postId}', [PostBookmarkController::class, 'store']);
+    Route::get('/post-bookmarks', [PostBookmarkController::class, 'fetchBookmarks']);
+    Route::get('/post-bookmarks/{id}', [PostBookmarkController::class, 'fetchById']);
 });

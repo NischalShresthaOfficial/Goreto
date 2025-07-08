@@ -55,4 +55,9 @@ class Post extends Model
     {
         return $this->hasMany(PostReport::class);
     }
+
+    public function postBookmarks()
+    {
+        return $this->hasMany(PostBookmark::class);
+    }
 }
