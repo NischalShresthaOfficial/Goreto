@@ -47,4 +47,7 @@ return [
         'key' => env('OPENWEATHERMAP_KEY'),
     ],
 
+    'stripe' => [
+        'secret' => env('STRIPE_SECRET'),
+    ],
 ];

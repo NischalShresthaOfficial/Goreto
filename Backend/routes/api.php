@@ -30,6 +30,7 @@ use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
+use App\Http\Controllers\Payments\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -128,4 +129,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile-picture', [ProfilePictureController::class, 'fetch']);
     Route::post('/profile-picture/update', [ProfilePictureController::class, 'update']);
     Route::post('/change-password', [PasswordController::class, 'changePassword']);
+
+    Route::post('/payments', [PaymentController::class, 'createPaymentIntent']);
+
 });
