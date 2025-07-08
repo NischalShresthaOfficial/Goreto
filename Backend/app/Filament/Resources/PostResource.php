@@ -32,10 +32,6 @@ class PostResource extends Resource
     {
         return $form->schema([
             Section::make([
-                TextInput::make('title')
-                    ->required()
-                    ->maxLength(255),
-
                 MarkdownEditor::make('description')
                     ->required()
                     ->maxLength(65535),
