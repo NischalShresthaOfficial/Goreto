@@ -108,9 +108,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/posts', [PostController::class, 'store']);
     Route::get('/posts', [PostController::class, 'fetch']);
+    Route::get('/posts/{postId}', [PostController::class, 'fetchById']);
     Route::get('/posts/mine', [PostController::class, 'fetchMyPosts']);
     Route::post('/posts/{postId}', [PostController::class, 'editPost']);
     Route::delete('/posts/{postId}', [PostController::class, 'deletePost']);
     Route::post('/post-reviews/{postId}', [PostController::class, 'storeReview']);
     Route::get('/post-reviews/{postId}', [PostController::class, 'fetchReviews']);
+    Route::get('/post-reviews/{postId}/{reviewId}', [PostController::class, 'fetchReviewById']);
 });

@@ -101,6 +101,18 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
+    public function fetchById($postId)
+    {
+        $post = Post::with(['postCategory.category', 'postContents', 'postLocations.location'])
+            ->find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        return response()->json($post);
+    }
+
     public function fetchMyPosts(Request $request)
     {
         $user = Auth::user();
@@ -287,5 +299,20 @@ class PostController extends Controller
         $reviews = $post->postReviews()->with('user:id,name,email')->paginate(10);
 
         return response()->json($reviews);
+    }
+
+    public function fetchReviewById($postId, $reviewId)
+    {
+
+        $review = PostReview::where('post_id', $postId)
+            ->where('id', $reviewId)
+            ->with('user:id,name,email')
+            ->first();
+
+        if (! $review) {
+            return response()->json(['error' => 'Review not found'], 404);
+        }
+
+        return response()->json($review);
     }
 }
