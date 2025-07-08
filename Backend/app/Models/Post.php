@@ -11,7 +11,6 @@ class Post extends Model
     use LogsActivity;
 
     protected $fillable = [
-        'title',
         'description',
         'status',
         'likes',
@@ -21,7 +20,7 @@ class Post extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['title', 'description', 'status','likes', 'user_id'])
+            ->logOnly(['title', 'description', 'status', 'likes', 'user_id'])
             ->useLogName('post')
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
@@ -40,6 +39,11 @@ class Post extends Model
     public function postLocations()
     {
         return $this->hasMany(PostLocation::class);
+    }
+
+    public function postCategory()
+    {
+        return $this->hasMany(PostCategory::class);
     }
 
     public function postReviews()

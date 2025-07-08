@@ -14,7 +14,7 @@ class CallInitiated implements ShouldBroadcast
     public function __construct(
         public int $callerId,
         public int $receiverId,
-        public string $type // 'audio' or 'video'
+        public string $type,
     ) {}
 
     public function broadcastOn()

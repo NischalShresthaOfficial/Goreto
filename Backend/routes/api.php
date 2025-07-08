@@ -21,6 +21,7 @@ use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\KavrepalanchowkPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
+use App\Http\Controllers\Posts\PostController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
@@ -104,4 +105,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/call/answer', [CallController::class, 'sendAnswer']);
     Route::post('/call/ice-candidate', [CallController::class, 'sendIceCandidate']);
     Route::post('/call/end', [CallController::class, 'end']);
+
+    Route::post('/posts', [PostController::class, 'store']);
+    Route::get('/posts', [PostController::class, 'fetch']);
+    Route::get('/posts/mine', [PostController::class, 'fetchMyPosts']);
 });
