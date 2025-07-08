@@ -109,4 +109,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/posts', [PostController::class, 'store']);
     Route::get('/posts', [PostController::class, 'fetch']);
     Route::get('/posts/mine', [PostController::class, 'fetchMyPosts']);
+    Route::post('/posts/{postId}', [PostController::class, 'editPost']);
+    Route::delete('/posts/{postId}', [PostController::class, 'deletePost']);
 });
