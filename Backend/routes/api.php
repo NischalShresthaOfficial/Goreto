@@ -23,12 +23,13 @@ use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
 use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
+use App\Http\Controllers\Profile\ProfilePictureController;
+use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
-use App\Http\Controllers\Profile\ProfilePictureController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -126,4 +127,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profile-picture', [ProfilePictureController::class, 'store']);
     Route::get('/profile-picture', [ProfilePictureController::class, 'fetch']);
     Route::post('/profile-picture/update', [ProfilePictureController::class, 'update']);
+    Route::post('/change-password', [PasswordController::class, 'changePassword']);
 });
