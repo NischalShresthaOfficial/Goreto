@@ -22,6 +22,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Posts\CreatePostController;
 use App\Http\Controllers\Posts\FetchPostController;
 use App\Http\Controllers\Profile\ProfilePictureController;
+use App\Http\Controllers\Group\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -66,6 +67,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::post('/change-password', [ChangePasswordController::class, 'update']);
+    Route::prefix('groups')->group(function () {
+    Route::post('/create', [GroupController::class, 'create']);
+    Route::post('/add-member', [GroupController::class, 'addMember']);
+    Route::get('/{groupId}/members', [GroupController::class, 'members']);
+    Route::delete('/remove-member', [GroupController::class, 'removeMember']);
+});
 
     // Route::get('/popular-places', [PopularPlacesController::class, 'search']);
 
