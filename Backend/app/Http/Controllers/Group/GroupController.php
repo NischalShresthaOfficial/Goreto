@@ -128,5 +128,34 @@ class GroupController extends Controller
 
         return response()->json(['message' => 'User removed from the group.']);
     }
-}
 
+    public function delete(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'group_id' => 'required|exists:groups,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $group = Group::find($request->group_id);
+
+        if (!$group) {
+            return response()->json(['message' => 'Group not found.'], 404);
+        }
+
+        $adminCheck = UserGroup::where('group_id', $group->id)
+            ->where('user_id', Auth::id())
+            ->where('member_role', 'admin')
+            ->first();
+
+        if (!$adminCheck) {
+            return response()->json(['message' => 'Only group admins can delete the group.'], 403);
+        }
+
+        $group->delete(); // Ensure cascading is defined in foreign keys
+
+        return response()->json(['message' => 'Group deleted successfully.']);
+    }
+}
