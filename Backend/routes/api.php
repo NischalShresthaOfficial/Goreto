@@ -21,6 +21,7 @@ use App\Http\Controllers\UserManagement\CategoryController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\Posts\CreatePostController;
 use App\Http\Controllers\Posts\FetchPostController;
+use App\Http\Controllers\Profile\ProfilePictureController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -88,6 +89,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user/{userId}', [FetchPostController::class, 'userPosts']);
         Route::get('/feed', [FetchPostController::class, 'feed']);
     });
+
+    Route::post('/profile-picture', [ProfilePictureController::class, 'store']);
+    Route::get('/profile-picture', [ProfilePictureController::class, 'fetch']);
+    Route::post('/profile-picture/update', [ProfilePictureController::class, 'update']);
 
 });
 
