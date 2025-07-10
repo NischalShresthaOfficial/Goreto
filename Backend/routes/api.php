@@ -11,6 +11,8 @@ use App\Http\Controllers\Chats\ChatMessageController;
 use App\Http\Controllers\Chats\NearbyActiveUsersController;
 use App\Http\Controllers\Chats\UserActivityStatusController;
 use App\Http\Controllers\Chats\UserLocationController;
+use App\Http\Controllers\Groups\GroupController;
+use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
@@ -23,14 +25,13 @@ use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
 use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
-use App\Http\Controllers\Profile\ProfilePictureController;
 use App\Http\Controllers\Profile\PasswordController;
+use App\Http\Controllers\Profile\ProfilePictureController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
-use App\Http\Controllers\Payments\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -132,4 +133,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/payments', [PaymentController::class, 'createPaymentIntent']);
 
+    Route::post('/groups', [GroupController::class, 'create']);
+    Route::post('/group-join/{groupId}', [GroupController::class, 'join']);
+    Route::post('/group-locations/{groupId}', [GroupController::class, 'addLocation']);
 });
