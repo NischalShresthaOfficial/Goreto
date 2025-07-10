@@ -84,7 +84,7 @@ class PaymentResource extends Resource
                 TextColumn::make('id')->sortable(),
                 TextColumn::make('user.name')->label('User')->searchable()->sortable(),
                 TextColumn::make('subscription.name')->label('Subscription')->searchable()->sortable(),
-                TextColumn::make('amount')->money('usd', true),
+                TextColumn::make('amount')->money('npr', true),
                 TextColumn::make('currency')->sortable(),
                 TextColumn::make('status')
                     ->badge()
