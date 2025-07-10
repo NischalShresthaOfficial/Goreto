@@ -18,11 +18,6 @@ use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
 use App\Http\Controllers\Places\LocationImages\LocationImageController;
 use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
-use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
-use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
-use App\Http\Controllers\Places\StoreAPIs\KavrepalanchowkPlacesController;
-use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
-use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
 use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
 use App\Http\Controllers\Profile\PasswordController;
@@ -33,7 +28,24 @@ use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/broadcasting/auth', function (Request $request) {
+    $channelName = $request->input('channel_name');
+    $socketId = $request->input('socket_id');
+
+    $pusher = Broadcast::driver('pusher')->getPusher();
+    $authResponse = $pusher->socket_auth($channelName, $socketId);
+    $authResponseArray = json_decode($authResponse, true);
+
+    $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
+
+    Log::info('Custom broadcasting auth response:', $authResponseArray);
+
+    return response()->json($authResponseArray);
+});
 
 Route::post('/register', [RegisterController::class, 'register']);
 Route::post('/verify-email', [EmailVerificationController::class, 'verifyEmail']);
@@ -47,17 +59,19 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::middleware(['auth:sanctum', 'role:super_admin'])->group(function () {
-        Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
+    // Route::post('/broadcasting/auth', function (Request $request) {
+    //     $channelName = $request->input('channel_name');
+    //     $socketId = $request->input('socket_id');
 
-        Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
+    //     $pusher = Broadcast::driver('pusher')->getPusher();
 
-        Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
+    //     $authResponse = $pusher->socket_auth($channelName, $socketId);
+    //     $authResponseArray = json_decode($authResponse, true);
 
-        Route::post('/places/fetch-kavre', [KavrepalanchowkPlacesController::class, 'fetchKavrePopularPlaces']);
+    //     $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
 
-        Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwakotPopularPlaces']);
-    });
+    //     return response()->json($authResponseArray);
+    // });
 
     Route::post('/logout', [LoginController::class, 'logout']);
 
@@ -102,6 +116,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/group-chats/info/{chatId}', [ChatController::class, 'getGroupChatInfo']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
+
+    // Broadcast::auth(function (Request $request) {
+    //     $channelName = $request->channel_name;
+    //     $socketId = $request->socket_id;
+
+    //     $pusher = Broadcast::driver('pusher')->getPusher();
+
+    //     $authResponse = $pusher->socket_auth($channelName, $socketId);
+
+    //     $authResponseArray = json_decode($authResponse, true);
+
+    //     $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
+
+    //     return response()->json($authResponseArray);
+    // });
 
     Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
 
