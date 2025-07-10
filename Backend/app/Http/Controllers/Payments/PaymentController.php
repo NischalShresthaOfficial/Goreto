@@ -25,40 +25,56 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $subscription = Subscription::findOrFail($request->subscription_id);
+        $newSubscription = Subscription::findOrFail($request->subscription_id);
+        $newSubId = $newSubscription->id;
 
-        $amountInSmallestUnit = (int) ($subscription->price * 100);
-        $durationDays = (int) $subscription->duration_days;
+        $existingSameSub = Payment::where('user_id', $user->id)
+            ->where('subscription_id', $newSubId)
+            ->where('subscription_status', 'active')
+            ->first();
+
+        if ($existingSameSub) {
+            return response()->json([
+                'error' => 'You already have an active subscription of this type.',
+            ], 409);
+        }
+
+        $paidAt = now();
+        $expiresAt = $paidAt->copy()->addDays($newSubscription->duration_days);
+
+        $otherActive = Payment::where('user_id', $user->id)
+            ->where('subscription_status', 'active')
+            ->where('subscription_id', '!=', $newSubId)
+            ->first();
+
+        if ($otherActive) {
+            $expiresAt = $otherActive->expires_at->copy()->addDays($newSubscription->duration_days);
+
+            $otherActive->update(['subscription_status' => 'expired']);
+        }
 
         Stripe::setApiKey(config('services.stripe.secret'));
 
         try {
             $paymentIntent = PaymentIntent::create([
-                'amount' => $amountInSmallestUnit,
+                'amount' => (int) ($newSubscription->price * 100),
                 'currency' => 'npr',
                 'payment_method_types' => $request->payment_method_types,
                 'metadata' => [
                     'user_id' => $user->id,
-                    'subscription_id' => $subscription->id,
+                    'subscription_id' => $newSubId,
                 ],
             ]);
-
-            $paidAt = now();
-            $expiresAt = $paidAt->copy()->addDays($durationDays);
-
-            $paymentMethod = $paymentIntent->payment_method ?? null;
-
-            $subscriptionStatus = $expiresAt->isFuture() ? 'active' : 'expired';
 
             $payment = Payment::create([
                 'user_id' => $user->id,
                 'stripe_payment_id' => $paymentIntent->id,
-                'amount' => $subscription->price,
+                'amount' => $newSubscription->price,
                 'currency' => 'NPR',
                 'status' => $paymentIntent->status,
-                'subscription_status' => $subscriptionStatus,
-                'payment_method' => $paymentMethod,
-                'subscription_id' => $subscription->id,
+                'subscription_status' => $expiresAt->isFuture() ? 'active' : 'expired',
+                'payment_method' => $paymentIntent->payment_method ?? null,
+                'subscription_id' => $newSubId,
                 'paid_at' => $paidAt,
                 'expires_at' => $expiresAt,
             ]);
