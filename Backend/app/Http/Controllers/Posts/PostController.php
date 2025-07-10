@@ -8,6 +8,7 @@ use App\Models\PostCategory;
 use App\Models\PostContent;
 use App\Models\PostLocation;
 use App\Models\PostNotification;
+use App\Models\PostReport;
 use App\Models\PostReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -358,5 +359,38 @@ class PostController extends Controller
         }
 
         return response()->json($review);
+    }
+
+    public function report(Request $request, $postId)
+    {
+        $request->validate([
+            'offense_type' => 'required|in:spam,harassment,hate_speech,nudity,violence',
+        ]);
+
+        $user = Auth::user();
+
+        $post = Post::find($postId);
+        if (! $post) {
+            return response()->json(['message' => 'Post not found'], 404);
+        }
+
+        $alreadyReported = PostReport::where('post_id', $postId)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($alreadyReported) {
+            return response()->json(['message' => 'You have already reported this post.'], 400);
+        }
+
+        $report = PostReport::create([
+            'user_id' => $user->id,
+            'post_id' => $postId,
+            'offense_type' => $request->offense_type,
+        ]);
+
+        return response()->json([
+            'message' => 'Post reported successfully.',
+            'report' => $report,
+        ], 201);
     }
 }

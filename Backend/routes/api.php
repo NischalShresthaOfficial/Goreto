@@ -126,6 +126,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/post-bookmarks', [PostBookmarkController::class, 'fetchBookmarks']);
     Route::get('/post-bookmarks/{id}', [PostBookmarkController::class, 'fetchById']);
 
+    Route::post('/post-report/{postId}', [PostController::class, 'report']);
+
     Route::post('/profile-picture', [ProfilePictureController::class, 'store']);
     Route::get('/profile-picture', [ProfilePictureController::class, 'fetch']);
     Route::post('/profile-picture/update', [ProfilePictureController::class, 'update']);
