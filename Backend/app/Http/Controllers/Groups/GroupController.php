@@ -15,7 +15,7 @@ class GroupController extends Controller
     protected function hasActiveSubscription($userId): bool
     {
         return Payment::where('user_id', $userId)
-            ->where('status', 'paid')
+            ->where('status', 'succeeded')
             ->where('expires_at', '>', Carbon::now())
             ->exists();
     }
