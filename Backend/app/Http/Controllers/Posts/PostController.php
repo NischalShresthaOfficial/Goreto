@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostContent;
 use App\Models\PostLocation;
+use App\Models\PostNotification;
 use App\Models\PostReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -62,6 +63,20 @@ class PostController extends Controller
 
                     logger('Created PostContent: '.json_encode($created));
                 }
+            }
+
+            $interestedUserIds = \App\Models\UserCategory::whereIn('category_id', $request->category_ids)
+                ->where('user_id', '!=', Auth::id())
+                ->pluck('user_id')
+                ->unique();
+
+            foreach ($interestedUserIds as $userId) {
+                PostNotification::create([
+                    'title' => 'New Post in Your Interest',
+                    'content' => substr($request->description, 0, 100),
+                    'user_id' => $userId,
+                    'post_id' => $post->id,
+                ]);
             }
 
             DB::commit();

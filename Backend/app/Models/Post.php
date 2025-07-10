@@ -60,4 +60,9 @@ class Post extends Model
     {
         return $this->hasMany(PostBookmark::class);
     }
+
+    public function postNotifications()
+    {
+        return $this->hasMany(PostNotification::class);
+    }
 }
