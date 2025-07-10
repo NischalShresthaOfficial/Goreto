@@ -16,7 +16,7 @@ class PaymentController extends Controller
         $request->validate([
             'amount' => 'required|integer|min:50',
             'currency' => 'required|string|in:USD,NPR',
-            'payment_method_types' => 'nullable|array',
+            'payment_method_types' => 'required|array',
         ]);
 
         $user = Auth::user();
