@@ -12,6 +12,7 @@ class Payment extends Model
         'amount',
         'currency',
         'status',
+        'subscription_status',
         'payment_method',
         'paid_at',
         'expires_at',

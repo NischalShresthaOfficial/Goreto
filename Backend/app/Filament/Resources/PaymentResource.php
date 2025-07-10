@@ -65,6 +65,15 @@ class PaymentResource extends Resource
                         ])
                         ->required(),
 
+                    Select::make('subscription_status')
+                        ->label('Subscription Status')
+                        ->options([
+                            'active' => 'Active',
+                            'expired' => 'Expired',
+                        ])
+                        ->required()
+                        ->default('active'),
+
                     TextInput::make('payment_method')
                         ->maxLength(255),
 
@@ -94,6 +103,15 @@ class PaymentResource extends Resource
                         'danger' => 'failed',
                         'primary' => 'requires_payment_method',
                     ]),
+                TextColumn::make('subscription_status')
+                    ->label('Subscription Status')
+                    ->badge()
+                    ->colors([
+                        'success' => 'active',
+                        'danger' => 'expired',
+                    ])
+                    ->sortable(),
+
                 TextColumn::make('payment_method')->sortable(),
                 TextColumn::make('paid_at')->dateTime()->sortable(),
                 TextColumn::make('expires_at')->dateTime()->sortable(),
@@ -104,6 +122,7 @@ class PaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
             ]);

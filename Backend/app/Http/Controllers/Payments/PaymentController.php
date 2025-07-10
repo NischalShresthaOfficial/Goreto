@@ -48,12 +48,15 @@ class PaymentController extends Controller
 
             $paymentMethod = $paymentIntent->payment_method ?? null;
 
+            $subscriptionStatus = $expiresAt->isFuture() ? 'active' : 'expired';
+
             $payment = Payment::create([
                 'user_id' => $user->id,
                 'stripe_payment_id' => $paymentIntent->id,
                 'amount' => $subscription->price,
                 'currency' => 'NPR',
                 'status' => $paymentIntent->status,
+                'subscription_status' => $subscriptionStatus,
                 'payment_method' => $paymentMethod,
                 'subscription_id' => $subscription->id,
                 'paid_at' => $paidAt,
@@ -64,6 +67,8 @@ class PaymentController extends Controller
                 'message' => 'Payment intent created',
                 'client_secret' => $paymentIntent->client_secret,
                 'payment_id' => $payment->id,
+                'status' => $paymentIntent->status,
+                'subscription_status' => $payment->subscription_status,
             ], 201);
 
         } catch (\Exception $e) {
