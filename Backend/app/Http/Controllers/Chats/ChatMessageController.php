@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Chats;
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
+use App\Models\ChatNotification;
 use App\Models\UserChat;
 use App\Notifications\ChatPushNotification;
 use Illuminate\Http\Request;
@@ -51,6 +52,14 @@ class ChatMessageController extends Controller
                     $request->messages,
                     $recipient->id
                 ));
+
+                ChatNotification::create([
+                    'chat_id' => $request->chat_id,
+                    'recipient_id' => $recipientId,
+                    'sender_id' => $senderId,
+                    'title' => 'New Message',
+                    'content' => $request->messages,
+                ]);
             }
         }
 

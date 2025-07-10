@@ -163,4 +163,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function chatNotifications()
+    {
+        return $this->hasMany(ChatNotification::class);
+    }
 }

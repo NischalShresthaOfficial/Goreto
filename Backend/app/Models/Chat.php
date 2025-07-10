@@ -30,4 +30,9 @@ class Chat extends Model
             ->using(UserChat::class)
             ->withTimestamps();
     }
+
+    public function chatNotifications()
+    {
+        return $this->hasMany(ChatNotification::class);
+    }
 }
