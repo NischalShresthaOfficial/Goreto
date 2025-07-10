@@ -11,6 +11,7 @@ class Subscription extends Model
         'price',
         'currency',
         'duration',
+        'duration_days',
     ];
 
     public function payments()
