@@ -59,20 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // Route::post('/broadcasting/auth', function (Request $request) {
-    //     $channelName = $request->input('channel_name');
-    //     $socketId = $request->input('socket_id');
-
-    //     $pusher = Broadcast::driver('pusher')->getPusher();
-
-    //     $authResponse = $pusher->socket_auth($channelName, $socketId);
-    //     $authResponseArray = json_decode($authResponse, true);
-
-    //     $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
-
-    //     return response()->json($authResponseArray);
-    // });
-
     Route::post('/logout', [LoginController::class, 'logout']);
 
     Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
@@ -117,21 +103,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
 
-    // Broadcast::auth(function (Request $request) {
-    //     $channelName = $request->channel_name;
-    //     $socketId = $request->socket_id;
-
-    //     $pusher = Broadcast::driver('pusher')->getPusher();
-
-    //     $authResponse = $pusher->socket_auth($channelName, $socketId);
-
-    //     $authResponseArray = json_decode($authResponse, true);
-
-    //     $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
-
-    //     return response()->json($authResponseArray);
-    // });
-
     Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
 
     Route::post('/call/initiate', [CallController::class, 'initiate']);
@@ -142,8 +113,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/posts', [PostController::class, 'store']);
     Route::get('/posts', [PostController::class, 'fetch']);
-    Route::get('/posts/{postId}', [PostController::class, 'fetchById']);
     Route::get('/posts/mine', [PostController::class, 'fetchMyPosts']);
+    Route::get('/posts/{postId}', [PostController::class, 'fetchById']);
     Route::post('/posts/{postId}', [PostController::class, 'editPost']);
     Route::delete('/posts/{postId}', [PostController::class, 'deletePost']);
     Route::post('/post-reviews/{postId}', [PostController::class, 'storeReview']);
