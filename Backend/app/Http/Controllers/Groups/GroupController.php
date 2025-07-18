@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Groups;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chat;
 use App\Models\Group;
 use App\Models\Payment;
 use App\Models\UserGroup;
@@ -41,15 +42,27 @@ class GroupController extends Controller
             'created_by' => $user->id,
         ]);
 
+        $chat = Chat::create([
+            'name' => $group->name,
+            'is_group' => true,
+            'created_by' => $user->id,
+        ]);
+
+        $group->group_chat_id = $chat->id;
+        $group->save();
+
         UserGroup::create([
             'user_id' => $user->id,
             'group_id' => $group->id,
             'member_role' => 'admin',
         ]);
 
+        $chat->users()->attach($user->id);
+
         return response()->json([
-            'message' => 'Group created successfully.',
+            'message' => 'Group and group chat created successfully.',
             'group' => $group,
+            'group_chat' => $chat,
         ], 201);
     }
 
@@ -79,8 +92,15 @@ class GroupController extends Controller
             'member_role' => 'member',
         ]);
 
+        if ($group->group_chat_id) {
+            $chat = Chat::find($group->group_chat_id);
+            if ($chat && ! $chat->users()->where('user_id', $user->id)->exists()) {
+                $chat->users()->attach($user->id);
+            }
+        }
+
         return response()->json([
-            'message' => 'Joined group successfully.',
+            'message' => 'Joined group and group chat successfully.',
             'group' => $group,
         ]);
     }

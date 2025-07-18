@@ -14,6 +14,7 @@ class Group extends Model
         'name',
         'created_by',
         'created_at',
+        'group_chat_id',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -33,5 +34,10 @@ class Group extends Model
     public function groupLocations()
     {
         return $this->hasMany(GroupLocation::class);
+    }
+
+    public function groupChat()
+    {
+        return $this->belongsTo(Chat::class, 'group_chat_id');
     }
 }

@@ -35,4 +35,9 @@ class Chat extends Model
     {
         return $this->hasMany(ChatNotification::class);
     }
+
+    public function group()
+    {
+        return $this->hasOne(Group::class);
+    }
 }
