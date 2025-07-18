@@ -22,7 +22,6 @@ class PaymentController extends Controller
         ]);
 
         $user = Auth::user();
-
         if (! $user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
@@ -51,7 +50,6 @@ class PaymentController extends Controller
 
         if ($otherActive) {
             $expiresAt = $otherActive->expires_at->copy()->addDays($newSubscription->duration_days);
-
             $otherActive->update(['subscription_status' => 'expired']);
         }
 
@@ -81,22 +79,17 @@ class PaymentController extends Controller
                 'expires_at' => $expiresAt,
             ]);
 
-            $payment->load(['user', 'subscription']);
-
-            $pdf = Pdf::loadView('invoice.invoice', compact('payment'));
-
-            $pdfPath = 'invoices/invoice-'.$payment->id.'.pdf';
-            Storage::disk('public')->put($pdfPath, $pdf->output());
-
-            $invoiceUrl = Storage::disk('public')->url($pdfPath);
+            if ($paymentIntent->status === 'succeeded') {
+                return $this->handleSuccessfulPayment($payment->id);
+            }
 
             return response()->json([
                 'message' => 'Payment intent created',
+                'user_id' => $user->id,
                 'client_secret' => $paymentIntent->client_secret,
                 'payment_id' => $payment->id,
                 'status' => $paymentIntent->status,
                 'subscription_status' => $payment->subscription_status,
-                'invoice_url' => $invoiceUrl,
             ], 201);
 
         } catch (\Exception $e) {
@@ -105,5 +98,52 @@ class PaymentController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function handleSuccessfulPayment(Request $request, $paymentId)
+    {
+        $request->validate([
+            'user_id' => 'required|integer|exists:users,id',
+        ]);
+
+        $userId = $request->input('user_id');
+
+        $payment = Payment::where('id', $paymentId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (! $payment) {
+            return response()->json(['error' => 'Payment not found for this user'], 404);
+        }
+
+        Stripe::setApiKey(config('services.stripe.secret'));
+        $stripePaymentIntent = PaymentIntent::retrieve($payment->stripe_payment_id);
+
+        if ($stripePaymentIntent->status !== 'succeeded') {
+            return response()->json(['error' => 'Payment is not successful yet'], 400);
+        }
+
+        if ($payment->status !== 'succeeded') {
+            $payment->update([
+                'status' => 'succeeded',
+                'payment_method' => $stripePaymentIntent->payment_method,
+            ]);
+        }
+
+        $pdfPath = 'invoices/invoice-'.$payment->id.'.pdf';
+        if (! Storage::disk('public')->exists($pdfPath)) {
+            $payment->load(['user', 'subscription']);
+            $pdf = Pdf::loadView('invoice.invoice', compact('payment'));
+            Storage::disk('public')->put($pdfPath, $pdf->output());
+        }
+
+        $invoiceUrl = Storage::disk('public')->url($pdfPath);
+
+        return response()->json([
+            'message' => 'Payment successful and invoice ready',
+            'payment_id' => $payment->id,
+            'status' => $payment->status,
+            'invoice_url' => $invoiceUrl,
+        ]);
     }
 }

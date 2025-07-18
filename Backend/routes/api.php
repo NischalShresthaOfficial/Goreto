@@ -134,6 +134,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [PasswordController::class, 'changePassword']);
 
     Route::post('/payments', [PaymentController::class, 'createPaymentIntent']);
+    Route::post('/payment-success/{paymentId}', [PaymentController::class, 'handleSuccessfulPayment']);
 
     Route::post('/groups', [GroupController::class, 'create']);
     Route::post('/group-join/{groupId}', [GroupController::class, 'join']);
