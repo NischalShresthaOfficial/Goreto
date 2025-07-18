@@ -2,62 +2,91 @@
 <html>
 <head>
     <title>Invoice #{{ $payment->id }}</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans&family=Roboto:wght@400;500;700&display=swap');
 
-        body {
-            font-family: 'Roboto', DejaVu Sans, sans-serif;
-            background-color: #F7F8F9; /* secondary */
-            color: #333333;
-            margin: 0;
-            padding: 2rem;
-        }
+    body {
+        font-family: 'Plus Jakarta Sans', 'Roboto', DejaVu Sans, sans-serif;
+        background-color: #F7F8F9;
+        color: #333333;
+        margin: 0;
+        padding: 2rem;
+    }
+
         .container {
-            max-width: 600px;
+            max-width: 440px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 2rem 3rem;
-        }
-        .header {
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 2rem 1.5rem;
             text-align: center;
-            border-bottom: 4px solid #FFB23F; /* primary */
+        }
+
+        .header {
+            border-bottom: 4px solid #FFB23F;
             padding-bottom: 1rem;
             margin-bottom: 2rem;
         }
+
         .header img {
             max-height: 80px;
+            margin-bottom: 0.75rem;
+        }
+
+        .title {
+            font-size: 1.3rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
         }
-        h1 {
-            color: #FFB23F; /* primary */
-            margin: 0;
+
+        .invoice-id {
+            color: #FFB23F;
             font-weight: 700;
-            font-size: 2rem;
+            font-size: 1.2rem;
         }
-        .details p {
-            margin: 0.5rem 0;
-            font-size: 1.1rem;
+
+        .details {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            text-align: left;
         }
-        .details strong {
-            color: #FFB23F; /* primary */
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ccc;
         }
-        .footer {
-            margin-top: 3rem;
-            font-size: 0.85rem;
-            color: #666666;
-            text-align: center;
+
+        .detail-key {
+            font-weight: 500;
+            color: #555;
         }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+            text-align: right;
+            flex: 1;
+        }
+
         .highlight-box {
-            background-color: #FFB23F; /* primary */
+            background-color: #FFB23F;
             color: white;
-            border-radius: 6px;
+            border-radius: 10px;
             padding: 1rem;
-            margin: 2rem 0;
+            margin: 2rem 0 1rem;
             font-weight: 600;
             text-align: center;
-            letter-spacing: 0.03em;
+        }
+
+        .footer {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+            margin-top: 2rem;
         }
     </style>
 </head>
@@ -69,17 +98,33 @@
             @else
                 <h1>{{ strtoupper(substr(config('app.name'), 0, 1)) }}</h1>
             @endif
-            <h1>Invoice #{{ $payment->id }}</h1>
+            <div class="title">Payment Details</div>
+            <div class="invoice-id">Invoice #{{ $payment->id }}</div>
         </div>
 
         <div class="details">
-            <p><strong>User:</strong> {{ $payment->user->name }}</p>
-            <p><strong>Subscription:</strong> {{ $payment->subscription->name }}</p>
-            <p><strong>Amount:</strong> NPR {{ number_format($payment->amount, 2) }}</p>
-            <p><strong>Paid At:</strong> {{ $payment->paid_at->format('Y-m-d H:i') }}</p>
-            <p><strong>Expires At:</strong> {{ $payment->expires_at->format('Y-m-d H:i') }}</p>
+            <div class="detail-row">
+                <div class="detail-key">User</div>
+                <div class="detail-value">{{ $payment->user->name }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-key">Subscription</div>
+                <div class="detail-value">{{ $payment->subscription->name }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-key">Amount</div>
+                <div class="detail-value">NPR {{ number_format($payment->amount, 2) }}</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-key">Paid At</div>
+                <div class="detail-value">{{ $payment->paid_at->format('Y-m-d H:i') }}</div>
+            </div>
+             <div class="detail-row" style="border-bottom: none;">
+        <div class="detail-key">Expires At</div>
+        <div class="detail-value">{{ $payment->expires_at->format('Y-m-d H:i') }}</div>
+    </div>
         </div>
-
+          <div style="border-bottom: 4px solid #FFB23F; padding-bottom: 1rem; margin-bottom: 2rem;"></div>
         <div class="highlight-box">
             Thank you for your subscription!
         </div>
