@@ -33,4 +33,15 @@ class Payment extends Model
     {
         return $this->belongsTo(Subscription::class, 'subscription_id');
     }
+
+    public function getInvoiceUrlAttribute(): ?string
+    {
+        $path = storage_path('app/public/invoices/invoice-'.$this->id.'.pdf');
+
+        if (file_exists($path)) {
+            return asset('storage/invoices/invoice-'.$this->id.'.pdf');
+        }
+
+        return null;
+    }
 }

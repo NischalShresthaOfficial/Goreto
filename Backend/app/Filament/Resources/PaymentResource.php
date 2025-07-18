@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -121,7 +122,14 @@ class PaymentResource extends Resource
                 //
             ])
             ->actions([
+                Action::make('viewInvoice')
+                    ->label('View Invoice')
+                    ->url(fn (Payment $record): ?string => $record->invoice_url)
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-document-text')
+                    ->visible(fn (Payment $record) => ! empty($record->invoice_url)),
                 Tables\Actions\EditAction::make(),
+
             ])
             ->bulkActions([
             ]);
