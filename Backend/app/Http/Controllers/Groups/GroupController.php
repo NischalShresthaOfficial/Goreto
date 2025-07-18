@@ -117,4 +117,81 @@ class GroupController extends Controller
             'group_location' => $groupLocation,
         ], 201);
     }
+
+    public function index()
+    {
+        $user = Auth::user();
+
+        $groups = Group::whereHas('userGroups', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with(['userGroups.user', 'groupLocations.location'])->get();
+
+        return response()->json([
+            'groups' => $groups,
+        ]);
+    }
+
+    public function myGroups()
+    {
+        $user = Auth::user();
+
+        $groups = Group::whereHas('userGroups', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->orWhere('created_by', $user->id)
+            ->with(['userGroups.user', 'groupLocations.location'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'groups' => $groups,
+        ]);
+    }
+
+    public function show($groupId)
+    {
+        $user = Auth::user();
+
+        $group = Group::where('id', $groupId)
+            ->whereHas('userGroups', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->with(['userGroups.user', 'groupLocations.location'])
+            ->first();
+
+        if (! $group) {
+            return response()->json([
+                'message' => 'Group not found or access denied.',
+            ], 404);
+        }
+
+        return response()->json([
+            'group' => $group,
+        ]);
+    }
+
+    public function myGroupsById($groupId)
+    {
+        $user = Auth::user();
+
+        $group = Group::where('id', $groupId)
+            ->where(function ($query) use ($user) {
+                $query->where('created_by', $user->id)
+                    ->orWhereHas('userGroups', function ($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    });
+            })
+            ->with(['userGroups.user', 'groupLocations.location'])
+            ->first();
+
+        if (! $group) {
+            return response()->json([
+                'message' => 'Group not found or access denied.',
+            ], 404);
+        }
+
+        return response()->json([
+            'group' => $group,
+        ]);
+    }
 }
