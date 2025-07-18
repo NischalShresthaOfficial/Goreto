@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Payments;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Subscription;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
@@ -79,12 +81,22 @@ class PaymentController extends Controller
                 'expires_at' => $expiresAt,
             ]);
 
+            $payment->load(['user', 'subscription']);
+
+            $pdf = Pdf::loadView('invoice.invoice', compact('payment'));
+
+            $pdfPath = 'invoices/invoice-'.$payment->id.'.pdf';
+            Storage::disk('public')->put($pdfPath, $pdf->output());
+
+            $invoiceUrl = Storage::disk('public')->url($pdfPath);
+
             return response()->json([
                 'message' => 'Payment intent created',
                 'client_secret' => $paymentIntent->client_secret,
                 'payment_id' => $payment->id,
                 'status' => $paymentIntent->status,
                 'subscription_status' => $payment->subscription_status,
+                'invoice_url' => $invoiceUrl,
             ], 201);
 
         } catch (\Exception $e) {
