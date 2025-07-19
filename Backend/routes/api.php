@@ -27,6 +27,7 @@ use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
+use App\Http\Controllers\Locations\LocationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
@@ -145,4 +146,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-groups', [GroupController::class, 'myGroups']);
     Route::get('/groups/{id}', [GroupController::class, 'show']);
     Route::get('/my-groups/{id}', [GroupController::class, 'myGroupsById']);
+
+    Route::get('/locations', [LocationController::class, 'index']);
 });
