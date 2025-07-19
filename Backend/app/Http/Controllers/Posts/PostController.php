@@ -108,18 +108,27 @@ class PostController extends Controller
 
         $userCategoryIds = $user->userCategories()->pluck('category_id');
 
-        $posts = Post::whereHas('postCategory', function ($query) use ($userCategoryIds) {
+        $locationId = $request->query('location_id');
+
+        $postsQuery = Post::whereHas('postCategory', function ($query) use ($userCategoryIds) {
             $query->whereIn('category_id', $userCategoryIds);
         })
-            ->where('user_id', '!=', $user->id)
-            ->with([
-                'postCategory.category',
-                'postContents',
-                'postLocations.location',
-                'user.profilePicture' => function ($query) {
-                    $query->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
-                },
-            ])
+            ->where('user_id', '!=', $user->id);
+
+        if ($locationId) {
+            $postsQuery->whereHas('postLocations', function ($query) use ($locationId) {
+                $query->where('location_id', $locationId);
+            });
+        }
+
+        $posts = $postsQuery->with([
+            'postCategory.category',
+            'postContents',
+            'postLocations.location',
+            'user.profilePicture' => function ($query) {
+                $query->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
+            },
+        ])
             ->paginate(10);
 
         $posts->getCollection()->transform(function ($post) {
