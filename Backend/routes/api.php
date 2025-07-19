@@ -125,6 +125,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/post-bookmarks/{postId}', [PostBookmarkController::class, 'store']);
     Route::get('/post-bookmarks', [PostBookmarkController::class, 'fetchBookmarks']);
     Route::get('/post-bookmarks/{id}', [PostBookmarkController::class, 'fetchById']);
+    Route::post('/posts-like/{postId}', [PostController::class, 'likePost']);
 
     Route::post('/post-report/{postId}', [PostController::class, 'report']);
 

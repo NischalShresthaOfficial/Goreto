@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostCategory;
 use App\Models\PostContent;
+use App\Models\PostLike;
 use App\Models\PostLocation;
 use App\Models\PostNotification;
 use App\Models\PostReport;
@@ -392,5 +393,53 @@ class PostController extends Controller
             'message' => 'Post reported successfully.',
             'report' => $report,
         ], 201);
+    }
+
+    public function likePost(Request $request, $postId)
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'No authenticated user found'], 401);
+        }
+
+        $post = Post::find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        $alreadyLiked = PostLike::where('post_id', $postId)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($alreadyLiked) {
+            return response()->json(['message' => 'You have already liked this post.'], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            PostLike::create([
+                'post_id' => $postId,
+                'user_id' => $user->id,
+            ]);
+
+            $post->increment('likes');
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Post liked successfully.',
+                'likes' => $post->likes,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to like post.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
