@@ -22,8 +22,8 @@ class PostController extends Controller
     {
         $request->validate([
             'description' => 'required|string',
-            'location_ids' => 'required|array',
-            'location_ids.*' => 'exists:locations,id',
+            'location_ids' => 'nullable|array',
+            'location_ids.*' => 'nullable|exists:locations,id',
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id',
             'contents' => 'required|array',
@@ -40,11 +40,13 @@ class PostController extends Controller
                 'user_id' => Auth::id(),
             ]);
 
-            foreach ($request->location_ids as $locationId) {
-                PostLocation::create([
-                    'post_id' => $post->id,
-                    'location_id' => $locationId,
-                ]);
+            if ($request->filled('location_ids')) {
+                foreach ($request->location_ids as $locationId) {
+                    PostLocation::create([
+                        'post_id' => $post->id,
+                        'location_id' => $locationId ?: null,
+                    ]);
+                }
             }
 
             foreach ($request->category_ids as $categoryId) {
@@ -256,7 +258,7 @@ class PostController extends Controller
                 foreach ($request->location_ids as $locationId) {
                     PostLocation::create([
                         'post_id' => $post->id,
-                        'location_id' => $locationId,
+                        'location_id' => $locationId ?: null,
                     ]);
                 }
             }
