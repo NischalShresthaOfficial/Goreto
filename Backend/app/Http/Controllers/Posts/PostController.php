@@ -112,20 +112,59 @@ class PostController extends Controller
             $query->whereIn('category_id', $userCategoryIds);
         })
             ->where('user_id', '!=', $user->id)
-            ->with(['postCategory.category', 'postContents', 'postLocations.location'])
+            ->with([
+                'postCategory.category',
+                'postContents',
+                'postLocations.location',
+                'user.profilePicture' => function ($query) {
+                    $query->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
+                },
+            ])
             ->paginate(10);
+
+        $posts->getCollection()->transform(function ($post) {
+            $profilePicture = $post->user->profilePicture->first() ?? null;
+            $post->user_info = [
+                'id' => $post->user->id,
+                'name' => $post->user->name,
+                'profile_picture_url' => $profilePicture
+                    ? Storage::disk('public')->url($profilePicture->profile_picture_url)
+                    : null,
+            ];
+            unset($post->user);
+
+            return $post;
+        });
 
         return response()->json($posts);
     }
 
     public function fetchById($postId)
     {
-        $post = Post::with(['postCategory.category', 'postContents', 'postLocations.location'])
+        $post = Post::with([
+            'postCategory.category',
+            'postContents',
+            'postLocations.location',
+            'user.profilePicture' => function ($query) {
+                $query->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
+            }])
             ->find($postId);
 
         if (! $post) {
             return response()->json(['error' => 'Post not found'], 404);
         }
+
+        $profilePicture = $post->user->profilePicture->first() ?? null;
+
+        $post->user_info = [
+            'id' => $post->user->id,
+            'name' => $post->user->name,
+            'profile_picture_url' => $profilePicture
+                ? Storage::disk('public')->url($profilePicture->profile_picture_url)
+                : null,
+        ];
+
+        unset($post->user);
 
         return response()->json($post);
     }
@@ -139,8 +178,29 @@ class PostController extends Controller
         }
 
         $posts = Post::where('user_id', $user->id)
-            ->with(['postCategory.category', 'postContents', 'postLocations.location'])
+            ->with([
+                'postCategory.category',
+                'postContents',
+                'postLocations.location',
+                'user.profilePicture' => function ($query) {
+                    $query->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
+                },
+            ])
             ->paginate(10);
+
+        $posts->getCollection()->transform(function ($post) {
+            $profilePicture = $post->user->profilePicture->first() ?? null;
+            $post->user_info = [
+                'id' => $post->user->id,
+                'name' => $post->user->name,
+                'profile_picture_url' => $profilePicture
+                    ? Storage::disk('public')->url($profilePicture->profile_picture_url)
+                    : null,
+            ];
+            unset($post->user);
+
+            return $post;
+        });
 
         return response()->json($posts);
     }
@@ -442,6 +502,7 @@ class PostController extends Controller
             ], 500);
         }
     }
+
     public function fetchLikes($postId)
     {
         $post = Post::find($postId);
