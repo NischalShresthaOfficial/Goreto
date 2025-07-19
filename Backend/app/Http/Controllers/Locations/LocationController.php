@@ -9,7 +9,14 @@ class LocationController extends Controller
 {
     public function index()
     {
-        $locations = Location::with(['category', 'city'])->paginate(10);
+        $query = Location::with(['category', 'city']);
+
+        if (request()->has('search') && request()->search !== null) {
+            $searchTerm = request()->search;
+            $query->where('name', 'like', '%'.$searchTerm.'%');
+        }
+
+        $locations = $query->paginate(10);
 
         return response()->json([
             'message' => 'Locations fetched successfully',
