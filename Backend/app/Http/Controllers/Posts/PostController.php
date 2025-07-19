@@ -442,4 +442,41 @@ class PostController extends Controller
             ], 500);
         }
     }
+
+    public function fetchLikes($postId)
+    {
+        $post = Post::find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        $likes = PostLike::where('post_id', $postId)
+            ->with(['user' => function ($query) {
+                $query->select('id', 'name')->with(['profilePicture' => function ($q) {
+                    $q->where('is_active', true)->select('id', 'user_id', 'profile_picture_url');
+                }]);
+            }])
+            ->get()
+            ->map(function ($like) {
+                $user = $like->user;
+                $profilePicture = $user->profilePicture->first();
+
+                $profilePictureUrl = $profilePicture
+                    ? Storage::disk('public')->url($profilePicture->profile_picture_url)
+                    : null;
+
+                return [
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                    'profile_picture_url' => $profilePictureUrl,
+                ];
+            });
+
+        return response()->json([
+            'post_id' => $postId,
+            'total_likes' => $likes->count(),
+            'liked_by' => $likes,
+        ]);
+    }
 }
