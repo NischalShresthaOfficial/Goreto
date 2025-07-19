@@ -65,4 +65,9 @@ class Post extends Model
     {
         return $this->hasMany(PostNotification::class);
     }
+
+    public function likes()
+    {
+        return $this->hasMany(PostLike::class);
+    }
 }
