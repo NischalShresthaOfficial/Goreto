@@ -6,12 +6,14 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Calls\CallController;
+use App\Http\Controllers\Categories\FetchCategoryController;
 use App\Http\Controllers\Chats\ChatController;
 use App\Http\Controllers\Chats\ChatMessageController;
 use App\Http\Controllers\Chats\NearbyActiveUsersController;
 use App\Http\Controllers\Chats\UserActivityStatusController;
 use App\Http\Controllers\Chats\UserLocationController;
 use App\Http\Controllers\Groups\GroupController;
+use App\Http\Controllers\Locations\LocationController;
 use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
@@ -27,7 +29,6 @@ use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
-use App\Http\Controllers\Locations\LocationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
@@ -148,4 +149,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-groups/{id}', [GroupController::class, 'myGroupsById']);
 
     Route::get('/locations', [LocationController::class, 'index']);
+
+    Route::get('/categories', [FetchCategoryController::class, 'index']);
 });
