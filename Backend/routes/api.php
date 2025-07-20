@@ -20,16 +20,29 @@ use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
 use App\Http\Controllers\Places\FetchAPIs\PopularPlacesController;
 use App\Http\Controllers\Places\LocationImages\LocationImageController;
 use App\Http\Controllers\Places\SearchAPI\SearchPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\BhaktapurPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\ChitwanPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\DhadingPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\DolakhaPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\KathmanduPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\KavrepalanchowkPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\LalitpurPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\MakwanpurPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\NuwakotPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\RamechhapPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\RasuwaPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\SindhuliPlacesController;
+use App\Http\Controllers\Places\StoreAPIs\SindhupalchokPlacesController;
 use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfilePictureController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
+use App\Http\Controllers\Subscriptions\SubscriptionController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
-use App\Http\Controllers\Subscriptions\SubscriptionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Log;
@@ -48,6 +61,34 @@ Route::post('/broadcasting/auth', function (Request $request) {
     Log::info('Custom broadcasting auth response:', $authResponseArray);
 
     return response()->json($authResponseArray);
+});
+
+Route::middleware(['auth:sanctum', 'role:super_admin'])->group(function () {
+    Route::post('/places/fetch-kathmandu', [KathmanduPlacesController::class, 'fetchKathmanduPopularPlaces']);
+
+    Route::post('/places/fetch-bhaktapur', [BhaktapurPlacesController::class, 'fetchBhaktapurPopularPlaces']);
+
+    Route::post('/places/fetch-lalitpur', [LalitpurPlacesController::class, 'fetchLalitpurPopularPlaces']);
+
+    Route::post('/places/fetch-kavre', [KavrepalanchowkPlacesController::class, 'fetchKavrePopularPlaces']);
+
+    Route::post('/places/fetch-nuwakot', [NuwakotPlacesController::class, 'fetchNuwakotPopularPlaces']);
+
+    Route::post('/places/fetch-chitwan', [ChitwanPlacesController::class, 'fetchChitwanPopularPlaces']);
+
+    Route::post('/places/fetch-dhading', [DhadingPlacesController::class, 'fetchDhadingPopularPlaces']);
+
+    Route::post('/places/fetch-dolakha', [DolakhaPlacesController::class, 'fetchDolakhaPopularPlaces']);
+
+    Route::post('/places/fetch-makwanpur', [MakwanpurPlacesController::class, 'fetchMakwanpurPopularPlaces']);
+
+    Route::post('/places/fetch-ramechhap', [RamechhapPlacesController::class, 'fetchRamechhapPopularPlaces']);
+
+    Route::post('/places/fetch-rasuwa', [RasuwaPlacesController::class, 'fetchRasuwaPopularPlaces']);
+
+    Route::post('/places/fetch-sindhuli', [SindhuliPlacesController::class, 'fetchSindhuliPopularPlaces']);
+
+    Route::post('/places/fetch-sindhupalchok', [SindhupalchokPlacesController::class, 'fetchSindhupalchokPopularPlaces']);
 });
 
 Route::post('/register', [RegisterController::class, 'register']);
