@@ -10,6 +10,7 @@ use App\Models\UserGroup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class GroupController extends Controller
 {
@@ -105,18 +106,27 @@ class GroupController extends Controller
         ]);
     }
 
-    public function addLocation(Request $request, Group $group)
+    public function addLocation(Request $request, $groupId)
     {
+        $group = Group::findOrFail($groupId);
+
         $request->validate([
             'location_id' => 'required|exists:locations,id',
         ]);
 
         $user = Auth::user();
+
         $isMember = $group->userGroups()->where('user_id', $user->id)->exists();
 
         if (! $isMember) {
             return response()->json([
                 'message' => 'You are not a member of this group.',
+            ], 403);
+        }
+
+        if ($group->created_by !== $user->id) {
+            return response()->json([
+                'message' => 'Only the group admin can add locations.',
             ], 403);
         }
 
@@ -212,6 +222,41 @@ class GroupController extends Controller
 
         return response()->json([
             'group' => $group,
+        ]);
+    }
+
+    public function updateProfilePicture(Request $request, $groupId)
+    {
+        $group = Group::findOrFail($groupId);
+
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,heic,heif|max:5120',
+        ]);
+
+        $user = Auth::user();
+
+        $userGroup = UserGroup::where('user_id', $user->id)
+            ->where('group_id', $group->id)
+            ->first();
+
+        if (! $userGroup || $userGroup->member_role !== 'admin') {
+            return response()->json([
+                'message' => 'Only the group admin can update the profile picture.',
+            ], 403);
+        }
+
+        if ($group->profile_picture) {
+            Storage::disk('public')->delete($group->profile_picture);
+        }
+
+        $path = $request->file('profile_picture')->store('group_profile_pictures', 'public');
+
+        $group->profile_picture = $path;
+        $group->save();
+
+        return response()->json([
+            'message' => 'Profile picture updated successfully.',
+            'profile_picture_url' => asset('storage/'.$path),
         ]);
     }
 }

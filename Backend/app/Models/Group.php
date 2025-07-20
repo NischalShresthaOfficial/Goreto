@@ -14,6 +14,7 @@ class Group extends Model
         'name',
         'created_by',
         'created_at',
+        'profile_picture',
         'group_chat_id',
     ];
 
