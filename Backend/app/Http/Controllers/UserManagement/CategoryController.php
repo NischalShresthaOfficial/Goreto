@@ -22,20 +22,27 @@ class CategoryController extends Controller
             return response()->json(['error' => 'No authenticated user found'], 401);
         }
 
-        UserCategory::where('user_id', $user->id)->delete();
+        $existingCategoryIds = UserCategory::where('user_id', $user->id)
+            ->pluck('category_id')
+            ->toArray();
 
-        $categories = Category::whereIn('category', $validated['categories'])->get();
+        $categoriesToAdd = Category::whereIn('category', $validated['categories'])->get();
 
-        foreach ($categories as $category) {
-            UserCategory::create([
-                'user_id' => $user->id,
-                'category_id' => $category->id,
-            ]);
+        $addedCategories = [];
+
+        foreach ($categoriesToAdd as $category) {
+            if (! in_array($category->id, $existingCategoryIds)) {
+                UserCategory::create([
+                    'user_id' => $user->id,
+                    'category_id' => $category->id,
+                ]);
+                $addedCategories[] = $category;
+            }
         }
 
         return response()->json([
-            'message' => 'Categories assigned successfully',
-            'categories' => $categories,
+            'message' => 'Categories added successfully',
+            'added_categories' => $addedCategories,
         ]);
     }
 }
