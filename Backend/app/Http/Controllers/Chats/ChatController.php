@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Chats;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chat;
+use App\Models\ChatMessage;
+use App\Models\ChatNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -215,6 +218,25 @@ class ChatController extends Controller
             'chat_id' => $chat->id,
             'name' => $chat->name,
             'image_url' => $chat->image_path ? asset('storage/'.$chat->image_path) : null,
+        ]);
+    }
+
+    public function markChatAsRead($chatId)
+    {
+        $user = auth()->user();
+
+        ChatMessage::where('chat_id', $chatId)
+            ->where('sent_by', '!=', $user->id)
+            ->whereNull('seen_at')
+            ->update(['seen_at' => Carbon::now()]);
+
+        ChatNotification::where('chat_id', $chatId)
+            ->where('recipient_id', $user->id)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        return response()->json([
+            'message' => 'Messages and notifications marked as read',
         ]);
     }
 }

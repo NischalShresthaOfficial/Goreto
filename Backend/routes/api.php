@@ -146,6 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/group-chats/info/{chatId}', [ChatController::class, 'getGroupChatInfo']);
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
+    Route::post('/mark-read/{chatId}', [ChatController::class, 'markChatAsRead']);
 
     Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
 
