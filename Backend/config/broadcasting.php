@@ -2,7 +2,7 @@
 
 return [
 
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default' => env('BROADCAST_DRIVER'),
 
     'connections' => [
 
@@ -15,7 +15,6 @@ return [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
                 'encrypted' => true,
-                'shared_secret' => env('PUSHER_APP_SHARED_SECRET'),
             ],
         ],
 

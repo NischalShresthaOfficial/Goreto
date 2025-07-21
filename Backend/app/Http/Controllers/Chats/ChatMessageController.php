@@ -38,7 +38,10 @@ class ChatMessageController extends Controller
             'sent_at' => now(),
         ]);
 
-        broadcast(new MessageSent($message))->toOthers();
+        // broadcast(new MessageSent($message))->toOthers();
+
+        broadcast(new MessageSent($message));
+
 
         $recipientIds = UserChat::where('chat_id', $request->chat_id)
             ->where('user_id', '!=', $senderId)

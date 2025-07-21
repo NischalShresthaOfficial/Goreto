@@ -56,7 +56,7 @@ Route::post('/broadcasting/auth', function (Request $request) {
     $authResponse = $pusher->socket_auth($channelName, $socketId);
     $authResponseArray = json_decode($authResponse, true);
 
-    $authResponseArray['shared_secret'] = config('broadcasting.connections.pusher.options.shared_secret') ?? '';
+    $authResponseArray['shared_secret'] = 'dummy_shared_secret';
 
     Log::info('Custom broadcasting auth response:', $authResponseArray);
 
