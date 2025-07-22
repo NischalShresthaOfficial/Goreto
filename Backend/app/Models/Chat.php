@@ -40,4 +40,9 @@ class Chat extends Model
     {
         return $this->hasOne(Group::class);
     }
+
+    public function calls()
+    {
+        return $this->hasMany(Call::class);
+    }
 }

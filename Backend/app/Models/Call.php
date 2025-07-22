@@ -14,6 +14,7 @@ class Call extends Model
         'started_at',
         'ended_at',
         'status',
+        'chat_id',
     ];
 
     protected $dates = [
@@ -29,5 +30,10 @@ class Call extends Model
     public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receiver_id');
+    }
+
+    public function chat(): BelongsTo
+    {
+        return $this->belongsTo(Chat::class, 'chat_id');
     }
 }

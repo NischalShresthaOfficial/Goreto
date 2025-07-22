@@ -550,4 +550,49 @@ class PostController extends Controller
             'liked_by' => $likes,
         ]);
     }
+
+    public function dislikePost(Request $request, $postId)
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return response()->json(['error' => 'No authenticated user found'], 401);
+        }
+
+        $post = Post::find($postId);
+
+        if (! $post) {
+            return response()->json(['error' => 'Post not found'], 404);
+        }
+
+        $like = PostLike::where('post_id', $postId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (! $like) {
+            return response()->json(['message' => 'You have not liked this post yet.'], 400);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $like->delete();
+
+            $post->decrement('likes');
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Post disliked successfully.',
+                'likes' => $post->likes,
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Failed to dislike post.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
