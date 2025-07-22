@@ -9,6 +9,7 @@ use App\Models\ChatNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
@@ -237,6 +238,115 @@ class ChatController extends Controller
 
         return response()->json([
             'message' => 'Messages and notifications marked as read',
+        ]);
+    }
+
+    public function myChats()
+    {
+        $userId = auth()->id();
+
+        $chats = Chat::whereHas('users', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+            ->with(['chatMessages' => function ($query) {
+                $query->orderBy('sent_at', 'desc')->limit(1);
+            }])
+            ->with(['users' => function ($query) {
+                $query->select('users.id', 'users.name')
+                    ->with(['profilePicture' => function ($query) {
+                        $query->where('is_active', true)->select('user_id', 'profile_picture_url');
+                    }]);
+            }])
+            ->orderByDesc(
+                DB::table('chat_messages')
+                    ->select('sent_at')
+                    ->whereColumn('chat_id', 'chats.id')
+                    ->orderBy('sent_at', 'desc')
+                    ->limit(1)
+            )
+            ->get();
+
+        $chatList = $chats->map(function ($chat) use ($userId) {
+            $latestMessage = $chat->chatMessages->first();
+
+            if ($chat->is_group) {
+                return [
+                    'chat_id' => $chat->id,
+                    'name' => $chat->name,
+                    'profile_picture' => $chat->image_path ? asset('storage/'.$chat->image_path) : null,
+                    'latest_message' => $latestMessage ? $latestMessage->messages : null,
+                    'latest_message_sent_at' => $latestMessage ? $latestMessage->sent_at : null,
+                    'is_group' => true,
+                ];
+            } else {
+                $otherUser = $chat->users->firstWhere('id', '!=', $userId);
+
+                $profilePicture = null;
+                if ($otherUser
+                    && $otherUser->relationLoaded('profilePicture')
+                    && $otherUser->profilePicture->isNotEmpty()) {
+                    $profilePicture = asset('storage/'.$otherUser->profilePicture->first()->profile_picture_url);
+                }
+
+                return [
+                    'chat_id' => $chat->id,
+                    'user_id' => $otherUser ? $otherUser->id : null,
+                    'name' => $otherUser ? $otherUser->name : 'Unknown',
+                    'profile_picture' => $profilePicture,
+                    'latest_message' => $latestMessage ? $latestMessage->messages : null,
+                    'latest_message_sent_at' => $latestMessage ? $latestMessage->sent_at : null,
+                    'is_group' => false,
+                ];
+            }
+        });
+
+        return response()->json([
+            'chats' => $chatList,
+        ]);
+    }
+
+    public function uploadGroupImage(Request $request, $chatId)
+    {
+        $request->validate([
+            'image' => 'required|image|max:2048',
+        ]);
+
+        $chat = Chat::where('id', $chatId)->where('is_group', true)->firstOrFail();
+
+        if ((int) $chat->created_by !== (int) auth()->id()) {
+            return response()->json(['message' => 'Only group owner can upload or change the group image'], 403);
+        }
+
+        if ($request->hasFile('image')) {
+            if ($chat->image_path) {
+                Storage::disk('public')->delete($chat->image_path);
+            }
+
+            $imagePath = $request->file('image')->store('group_images', 'public');
+            $chat->image_path = $imagePath;
+            $chat->save();
+        }
+
+        return response()->json([
+            'message' => 'Group image uploaded successfully',
+            'image_url' => asset('storage/'.$chat->image_path),
+        ]);
+    }
+
+    public function fetchGroupChatImage($chatId)
+    {
+        $chat = Chat::where('id', $chatId)
+            ->where('is_group', true)
+            ->firstOrFail();
+
+        if (! $chat->users()->where('user_id', auth()->id())->exists()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'chat_id' => $chat->id,
+            'name' => $chat->name,
+            'image_url' => $chat->image_path ? asset('storage/'.$chat->image_path) : null,
         ]);
     }
 }

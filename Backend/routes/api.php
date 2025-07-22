@@ -144,9 +144,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/group-chats/{chatId}', [ChatController::class, 'deleteGroupChat']);
     Route::post('/group-chats/edit/{chatId}', [ChatController::class, 'editGroupChat']);
     Route::get('/group-chats/info/{chatId}', [ChatController::class, 'getGroupChatInfo']);
+    Route::post('/group-chats-image/{chatId}', [ChatController::class, 'uploadGroupImage']);
+    Route::get('/group-chats-image/{chatId}', [ChatController::class, 'fetchGroupChatImage']);
+
     Route::post('/chats/send', [ChatMessageController::class, 'store']);
     Route::get('/chats/{chatId}', [ChatMessageController::class, 'fetchMessages']);
     Route::post('/mark-read/{chatId}', [ChatController::class, 'markChatAsRead']);
+    Route::get('/my-chats', [ChatController::class, 'myChats']);
 
     Route::get('/weather/{cityId}', [WeatherController::class, 'fetchAndStoreWeather']);
 
