@@ -21,12 +21,14 @@ class CallController extends Controller
         $request->validate([
             'receiver_id' => 'required|exists:users,id|different:'.Auth::id(),
             'type' => 'required|in:audio,video',
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         $call = Call::create([
             'caller_id' => Auth::id(),
             'receiver_id' => $request->receiver_id,
             'type' => $request->type,
+            'chat_id' => $request->chat_id,
             'started_at' => now(),
             'status' => null,
         ]);
@@ -34,7 +36,8 @@ class CallController extends Controller
         broadcast(new CallInitiated(
             Auth::id(),
             $request->receiver_id,
-            $request->type
+            $request->type,
+            $request->chat_id
         ))->toOthers();
 
         return response()->json([
@@ -48,12 +51,14 @@ class CallController extends Controller
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'sdp' => 'required|string',
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         broadcast(new OfferSent(
             Auth::id(),
             $request->receiver_id,
-            $request->sdp
+            $request->sdp,
+            $request->chat_id ?? null
         ))->toOthers();
 
         return response()->json(['message' => 'Offer sent']);
@@ -64,12 +69,14 @@ class CallController extends Controller
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'sdp' => 'required|string',
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         broadcast(new CallAnswered(
             Auth::id(),
             $request->receiver_id,
-            $request->sdp
+            $request->sdp,
+            $request->chat_id ?? null
         ))->toOthers();
 
         return response()->json(['message' => 'Answer sent']);
@@ -80,12 +87,14 @@ class CallController extends Controller
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'candidate' => 'required|array',
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         broadcast(new IceCandidateReceived(
             Auth::id(),
             $request->receiver_id,
-            $request->candidate
+            $request->candidate,
+            $request->chat_id ?? null
         ))->toOthers();
 
         return response()->json(['message' => 'ICE candidate sent']);
@@ -97,6 +106,7 @@ class CallController extends Controller
             'receiver_id' => 'required|exists:users,id',
             'call_id' => 'nullable|exists:calls,id',
             'status' => 'nullable|in:completed,missed,rejected',
+            'chat_id' => 'nullable|exists:chats,id',
         ]);
 
         if ($request->filled('call_id')) {
@@ -110,7 +120,8 @@ class CallController extends Controller
 
         broadcast(new CallEnded(
             Auth::id(),
-            $request->receiver_id
+            $request->receiver_id,
+            $request->chat_id ?? null
         ))->toOthers();
 
         return response()->json(['message' => 'Call ended']);

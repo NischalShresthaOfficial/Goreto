@@ -13,7 +13,8 @@ class CallEnded implements ShouldBroadcast
 
     public function __construct(
         public int $senderId,
-        public int $receiverId
+        public int $receiverId,
+        public ?int $chatId = null,
     ) {}
 
     public function broadcastOn()
@@ -25,6 +26,7 @@ class CallEnded implements ShouldBroadcast
     {
         return [
             'sender_id' => $this->senderId,
+            'chat_id' => $this->chatId,
         ];
     }
 }

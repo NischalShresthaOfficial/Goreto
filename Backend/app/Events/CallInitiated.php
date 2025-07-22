@@ -15,6 +15,7 @@ class CallInitiated implements ShouldBroadcast
         public int $callerId,
         public int $receiverId,
         public string $type,
+        public ?int $chatId = null,
     ) {}
 
     public function broadcastOn()
@@ -27,6 +28,7 @@ class CallInitiated implements ShouldBroadcast
         return [
             'type' => $this->type,
             'caller_id' => $this->callerId,
+            'chat_id' => $this->chatId,
         ];
     }
 }

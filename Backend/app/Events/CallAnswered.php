@@ -14,7 +14,8 @@ class CallAnswered implements ShouldBroadcast
     public function __construct(
         public int $senderId,
         public int $receiverId,
-        public string $sdp
+        public string $sdp,
+        public ?int $chatId = null,
     ) {}
 
     public function broadcastOn()
@@ -27,6 +28,7 @@ class CallAnswered implements ShouldBroadcast
         return [
             'sender_id' => $this->senderId,
             'sdp' => $this->sdp,
+            'chat_id' => $this->chatId,
         ];
     }
 }

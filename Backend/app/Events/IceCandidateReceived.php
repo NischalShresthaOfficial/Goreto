@@ -14,7 +14,8 @@ class IceCandidateReceived implements ShouldBroadcast
     public function __construct(
         public int $senderId,
         public int $receiverId,
-        public array $candidate
+        public array $candidate,
+        public ?int $chatId = null,
     ) {}
 
     public function broadcastOn()
@@ -27,6 +28,7 @@ class IceCandidateReceived implements ShouldBroadcast
         return [
             'sender_id' => $this->senderId,
             'candidate' => $this->candidate,
+            'chat_id' => $this->chatId,
         ];
     }
 }
