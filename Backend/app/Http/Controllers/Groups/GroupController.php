@@ -152,9 +152,9 @@ class GroupController extends Controller
     {
         $user = Auth::user();
 
-        $groups = Group::whereHas('userGroups', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })->with(['userGroups.user', 'groupLocations.location'])->get();
+        $groups = Group::with(['userGroups.user', 'groupLocations.location'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'groups' => $groups,
@@ -180,18 +180,12 @@ class GroupController extends Controller
 
     public function show($groupId)
     {
-        $user = Auth::user();
-
-        $group = Group::where('id', $groupId)
-            ->whereHas('userGroups', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->with(['userGroups.user', 'groupLocations.location'])
-            ->first();
+        $group = Group::with(['userGroups.user', 'groupLocations.location'])
+            ->find($groupId);
 
         if (! $group) {
             return response()->json([
-                'message' => 'Group not found or access denied.',
+                'message' => 'Group not found.',
             ], 404);
         }
 

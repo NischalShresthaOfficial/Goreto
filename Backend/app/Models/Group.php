@@ -18,6 +18,15 @@ class Group extends Model
         'group_chat_id',
     ];
 
+    protected $appends = ['profile_picture_url'];
+
+    public function getProfilePictureUrlAttribute()
+    {
+        return $this->profile_picture
+            ? asset('storage/'.$this->profile_picture)
+            : null;
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
