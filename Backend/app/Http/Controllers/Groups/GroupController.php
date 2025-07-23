@@ -253,4 +253,21 @@ class GroupController extends Controller
             'profile_picture_url' => asset('storage/'.$path),
         ]);
     }
+
+    public function joinedGroups()
+    {
+        $user = Auth::user();
+
+        $groups = Group::whereHas('userGroups', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->where('created_by', '!=', $user->id)
+            ->with(['userGroups.user', 'groupLocations.location'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'groups' => $groups,
+        ]);
+    }
 }

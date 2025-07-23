@@ -192,6 +192,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/group-join/{groupId}', [GroupController::class, 'join']);
     Route::post('/group-locations/{groupId}', [GroupController::class, 'addLocation']);
     Route::post('/groups-picture/{groupId}', [GroupController::class, 'updateProfilePicture']);
+    Route::get('/groups/joined', [GroupController::class, 'joinedGroups']);
 
     Route::get('/groups', [GroupController::class, 'index']);
     Route::get('/my-groups', [GroupController::class, 'myGroups']);
