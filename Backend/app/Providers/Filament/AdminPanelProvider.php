@@ -3,6 +3,12 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Resources\Pages\ActivityLog;
+use App\Filament\Widgets\GroupsByUserBarChart;
+use App\Filament\Widgets\GroupsByUserPieChart;
+use App\Filament\Widgets\PostsByUserBarChart;
+use App\Filament\Widgets\PostsByUserPieChart;
+use App\Filament\Widgets\SubscriptionBarChart;
+use App\Filament\Widgets\SubscriptionPieChart;
 use App\Http\Middleware\SuperAdminMiddleware;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
@@ -13,7 +19,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -52,8 +57,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                GroupsByUserPieChart::class,
+                GroupsByUserBarChart::class,
+                SubscriptionPieChart::class,
+                SubscriptionbarChart::class,
+                PostsByUserPieChart::class,
+                PostsByUserBarChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,
