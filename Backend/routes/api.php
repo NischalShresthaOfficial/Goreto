@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/places/popular', [PopularPlacesController::class, 'fetchFromDb']);
 
     Route::get('/places/popular/{id}', [PopularPlacesController::class, 'fetchById']);
+    Route::get('/places-notifications', [PopularPlacesController::class, 'createNearbyLocationNotifications']);
 
     Route::post('/categories', [CategoryController::class, 'store']);
 
