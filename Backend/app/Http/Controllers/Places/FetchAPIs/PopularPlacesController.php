@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Places\FetchAPIs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Location;
+use App\Models\LocationNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PopularPlacesController extends Controller
 {
@@ -83,6 +85,51 @@ class PopularPlacesController extends Controller
         return response()->json([
             'message' => 'Location fetched successfully',
             'data' => $location,
+        ]);
+    }
+
+    public function createNearbyLocationNotifications(Request $request)
+    {
+        $request->validate([
+            'latitude' => ['required', 'numeric'],
+            'longitude' => ['required', 'numeric'],
+        ]);
+
+        $user = Auth::user();
+
+        $latitude = $request->query('latitude');
+        $longitude = $request->query('longitude');
+        $radius = 1000;
+
+        $locations = Location::selectRaw('
+        locations.*,
+        (6371000 * acos(
+            cos(radians(?)) *
+            cos(radians(latitude)) *
+            cos(radians(longitude) - radians(?)) +
+            sin(radians(?)) *
+            sin(radians(latitude))
+        )) AS distance', [$latitude, $longitude, $latitude])
+            ->having('distance', '<=', $radius)
+            ->orderBy('distance')
+            ->limit(5)
+            ->get();
+
+        $notifications = [];
+
+        foreach ($locations as $location) {
+            $notifications[] = LocationNotification::create([
+                'user_id' => $user->id,
+                'location_id' => $location->id,
+                'title' => 'Nearby Place: '.$location->name,
+                'content' => 'Check out '.$location->name.' located nearby you!',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Location notifications created for nearby places.',
+            'notifications_created' => count($notifications),
+            'data' => $notifications,
         ]);
     }
 }
