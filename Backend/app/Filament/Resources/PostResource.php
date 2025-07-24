@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
+use App\Models\Category;
 use App\Models\Location;
 use App\Models\Post;
 use App\Models\User;
@@ -67,6 +68,19 @@ class PostResource extends Resource
                     ])
                     ->columns(1)
                     ->label('Add Location'),
+
+                Repeater::make('postCategory')
+                    ->relationship()
+                    ->label('Post Categories')
+                    ->schema([
+                        Select::make('category_id')
+                            ->label('Category')
+                            ->options(Category::pluck('category', 'id'))
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->columns(1)
+                    ->label('Add Category'),
 
                 Repeater::make('postContents')
                     ->relationship()
