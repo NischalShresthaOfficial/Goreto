@@ -50,4 +50,8 @@ return [
     'stripe' => [
         'secret' => env('STRIPE_SECRET'),
     ],
+
+    'cohere' => [
+        'api_key' => env('COHERE_API_KEY'),
+    ],
 ];

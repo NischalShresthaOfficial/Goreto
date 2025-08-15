@@ -14,6 +14,7 @@ use App\Http\Controllers\Chats\UserActivityStatusController;
 use App\Http\Controllers\Chats\UserLocationController;
 use App\Http\Controllers\Groups\GroupController;
 use App\Http\Controllers\Locations\LocationController;
+use App\Http\Controllers\Locations\RecommendationController;
 use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Places\CategoryAPIs\CategoryPlacesController;
 use App\Http\Controllers\Places\CategoryAPIs\UserCategoryController;
@@ -206,4 +207,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/categories', [FetchCategoryController::class, 'index']);
 
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
+
+    Route::post('/recommendations', [RecommendationController::class, 'recommendFromPrompt']);
 });
