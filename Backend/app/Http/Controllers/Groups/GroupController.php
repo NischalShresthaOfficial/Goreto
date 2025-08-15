@@ -111,7 +111,8 @@ class GroupController extends Controller
         $group = Group::findOrFail($groupId);
 
         $request->validate([
-            'location_id' => 'required|exists:locations,id',
+            'location_ids' => 'required|array|min:1',
+            'location_ids.*' => 'required|exists:locations,id',
         ]);
 
         $user = Auth::user();
@@ -124,27 +125,36 @@ class GroupController extends Controller
             ], 403);
         }
 
-        if ($group->created_by !== $user->id) {
+        $isAdmin = $group->created_by === $user->id ||
+            $group->userGroups()->where('user_id', $user->id)->where('member_role', 'admin')->exists();
+
+        if (! $isAdmin) {
             return response()->json([
                 'message' => 'Only the group admin can add locations.',
             ], 403);
         }
 
-        $exists = $group->groupLocations()->where('location_id', $request->location_id)->exists();
+        $addedLocations = [];
+        foreach ($request->location_ids as $locationId) {
+            $exists = $group->groupLocations()->where('location_id', $locationId)->exists();
 
-        if ($exists) {
+            if (! $exists) {
+                $groupLocation = $group->groupLocations()->create([
+                    'location_id' => $locationId,
+                ]);
+                $addedLocations[] = $groupLocation;
+            }
+        }
+
+        if (empty($addedLocations)) {
             return response()->json([
-                'message' => 'Location already added to the group.',
+                'message' => 'No new locations were added (all were duplicates).',
             ], 400);
         }
 
-        $groupLocation = $group->groupLocations()->create([
-            'location_id' => $request->location_id,
-        ]);
-
         return response()->json([
-            'message' => 'Location added to group successfully.',
-            'group_location' => $groupLocation,
+            'message' => 'Locations added successfully.',
+            'group_locations' => $addedLocations,
         ], 201);
     }
 
