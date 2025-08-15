@@ -153,6 +153,10 @@ class GroupController extends Controller
         $user = Auth::user();
 
         $groups = Group::with(['userGroups.user', 'groupLocations.location'])
+            ->where('created_by', '!=', $user->id)
+            ->whereDoesntHave('userGroups', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -165,10 +169,11 @@ class GroupController extends Controller
     {
         $user = Auth::user();
 
-        $groups = Group::whereHas('userGroups', function ($query) use ($user) {
-            $query->where('user_id', $user->id);
-        })
-            ->orWhere('created_by', $user->id)
+        $groups = Group::where('created_by', $user->id)
+            ->orWhereHas('userGroups', function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->where('member_role', 'admin');
+            })
             ->with(['userGroups.user', 'groupLocations.location'])
             ->orderBy('created_at', 'desc')
             ->get();
@@ -202,7 +207,8 @@ class GroupController extends Controller
             ->where(function ($query) use ($user) {
                 $query->where('created_by', $user->id)
                     ->orWhereHas('userGroups', function ($q) use ($user) {
-                        $q->where('user_id', $user->id);
+                        $q->where('user_id', $user->id)
+                            ->where('member_role', 'admin');
                     });
             })
             ->with(['userGroups.user', 'groupLocations.location'])
