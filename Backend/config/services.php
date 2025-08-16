@@ -54,4 +54,8 @@ return [
     'cohere' => [
         'api_key' => env('COHERE_API_KEY'),
     ],
+
+    'google' => [
+        'api_key' => env('GOOGLE_API_KEY'),
+    ],
 ];

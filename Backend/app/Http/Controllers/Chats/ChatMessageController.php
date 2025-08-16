@@ -66,9 +66,16 @@ class ChatMessageController extends Controller
             }
         }
 
+        $messageArray = $message->toArray();
+        try {
+            $messageArray['messages'] = Crypt::decryptString($messageArray['messages']);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            $messageArray['messages'] = '[Unable to decrypt message]';
+        }
+
         return response()->json([
             'message' => 'Message sent and notified',
-            'data' => $message,
+            'data' => $messageArray,
         ]);
     }
 

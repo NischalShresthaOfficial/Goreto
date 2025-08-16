@@ -42,6 +42,7 @@ use App\Http\Controllers\Profile\ProfilePictureController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
 use App\Http\Controllers\Reviews\LocationReviewController;
 use App\Http\Controllers\Subscriptions\SubscriptionController;
+use App\Http\Controllers\TextToSpeech\CloudSpeechController;
 use App\Http\Controllers\UserManagement\CategoryController;
 use App\Http\Controllers\UserManagement\FavouriteLocationController;
 use App\Http\Controllers\Weather\WeatherController;
@@ -212,4 +213,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/recommendations', [RecommendationController::class, 'recommendFromPrompt']);
 
     Route::get('/post-notifications', [PostNotificationController::class, 'index']);
+
+    Route::post('/text-to-speech', [CloudSpeechController::class, 'textToSpeech']);
+    Route::post('/speech-to-text', [CloudSpeechController::class, 'speechToText']);
 });
