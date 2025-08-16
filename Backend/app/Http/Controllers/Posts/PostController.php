@@ -12,6 +12,7 @@ use App\Models\PostLocation;
 use App\Models\PostNotification;
 use App\Models\PostReport;
 use App\Models\PostReview;
+use App\Models\UserCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;

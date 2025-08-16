@@ -55,7 +55,11 @@ return [
         'api_key' => env('COHERE_API_KEY'),
     ],
 
-    'google' => [
-        'api_key' => env('GOOGLE_API_KEY'),
+    'stt' => [
+        'api_key' => env('GOOGLE_STT_API_KEY'),
+    ],
+
+    'tts' => [
+        'api_key' => env('GOOGLE_TTS_API_KEY'),
     ],
 ];
