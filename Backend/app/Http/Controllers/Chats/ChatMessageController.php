@@ -9,6 +9,7 @@ use App\Models\ChatNotification;
 use App\Models\UserChat;
 use App\Notifications\ChatPushNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 
 class ChatMessageController extends Controller
 {
@@ -21,7 +22,7 @@ class ChatMessageController extends Controller
 
         $senderId = auth()->id();
 
-        $isParticipant = \App\Models\UserChat::where('chat_id', $request->chat_id)
+        $isParticipant = UserChat::where('chat_id', $request->chat_id)
             ->where('user_id', $senderId)
             ->exists();
 
@@ -31,17 +32,16 @@ class ChatMessageController extends Controller
             ], 403);
         }
 
+        $encryptedMessage = Crypt::encryptString($request->messages);
+
         $message = ChatMessage::create([
             'chat_id' => $request->chat_id,
-            'messages' => $request->messages,
+            'messages' => $encryptedMessage,
             'sent_by' => $senderId,
             'sent_at' => now(),
         ]);
 
-        // broadcast(new MessageSent($message))->toOthers();
-
         broadcast(new MessageSent($message));
-
 
         $recipientIds = UserChat::where('chat_id', $request->chat_id)
             ->where('user_id', '!=', $senderId)
@@ -88,6 +88,16 @@ class ChatMessageController extends Controller
         $messages = ChatMessage::where('chat_id', $chatId)
             ->orderBy('sent_at', 'asc')
             ->paginate($perPage);
+
+        $messages->getCollection()->transform(function ($msg) {
+            try {
+                $msg->messages = Crypt::decryptString($msg->messages);
+            } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+                $msg->messages = '[Unable to decrypt message]';
+            }
+
+            return $msg;
+        });
 
         return response()->json([
             'chat_id' => $chatId,
