@@ -216,4 +216,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/text-to-speech', [CloudSpeechController::class, 'textToSpeech']);
     Route::post('/speech-to-text', [CloudSpeechController::class, 'speechToText']);
+    Route::get('/voices', [CloudSpeechController::class, 'getAvailableVoices']);
 });
