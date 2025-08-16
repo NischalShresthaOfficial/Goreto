@@ -36,6 +36,7 @@ use App\Http\Controllers\Places\StoreAPIs\SindhuliPlacesController;
 use App\Http\Controllers\Places\StoreAPIs\SindhupalchokPlacesController;
 use App\Http\Controllers\Posts\PostBookmarkController;
 use App\Http\Controllers\Posts\PostController;
+use App\Http\Controllers\Posts\PostNotificationController;
 use App\Http\Controllers\Profile\PasswordController;
 use App\Http\Controllers\Profile\ProfilePictureController;
 use App\Http\Controllers\Reviews\FetchLocationReviewController;
@@ -209,4 +210,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/subscriptions', [SubscriptionController::class, 'index']);
 
     Route::post('/recommendations', [RecommendationController::class, 'recommendFromPrompt']);
+
+    Route::get('/post-notifications', [PostNotificationController::class, 'index']);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Posts;
 
+use App\Events\NewPostNotification;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostCategory;
@@ -60,27 +61,27 @@ class PostController extends Controller
                 foreach ($request->file('contents') as $file) {
                     $path = $file->store('post_contents', 'public');
 
-                    $created = PostContent::create([
+                    PostContent::create([
                         'post_id' => $post->id,
                         'content_path' => $path,
                     ]);
-
-                    logger('Created PostContent: '.json_encode($created));
                 }
             }
 
-            $interestedUserIds = \App\Models\UserCategory::whereIn('category_id', $request->category_ids)
+            $interestedUserIds = UserCategory::whereIn('category_id', $request->category_ids)
                 ->where('user_id', '!=', Auth::id())
                 ->pluck('user_id')
                 ->unique();
 
             foreach ($interestedUserIds as $userId) {
-                PostNotification::create([
+                $notification = PostNotification::create([
                     'title' => 'New Post in Your Interest',
                     'content' => substr($request->description, 0, 100),
                     'user_id' => $userId,
                     'post_id' => $post->id,
                 ]);
+
+                broadcast(new NewPostNotification($notification))->toOthers();
             }
 
             DB::commit();
