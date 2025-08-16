@@ -12,14 +12,16 @@ class WeatherController extends Controller
     public function fetchAndStoreWeather($cityId)
     {
         $city = City::find($cityId);
+
         if (! $city) {
             return response()->json(['message' => 'City not found'], 404);
         }
 
         $apiKey = env('OPENWEATHERMAP_KEY');
-        $cityName = $city->name;
 
-        $url = "https://api.openweathermap.org/data/2.5/weather?q={$cityName}&appid={$apiKey}&units=metric";
+        $query = $city->city.',NP';
+
+        $url = 'https://api.openweathermap.org/data/2.5/weather?q='.urlencode($query)."&appid={$apiKey}&units=metric";
 
         $response = Http::get($url);
 
