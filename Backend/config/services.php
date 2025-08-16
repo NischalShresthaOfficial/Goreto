@@ -62,4 +62,8 @@ return [
     'tts' => [
         'api_key' => env('GOOGLE_TTS_API_KEY'),
     ],
+
+    'translate' => [
+        'api_key' => env('GOOGLE_TRANSLATE_API_KEY'),
+    ],
 ];

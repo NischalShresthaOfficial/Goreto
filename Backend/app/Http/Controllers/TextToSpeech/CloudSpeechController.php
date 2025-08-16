@@ -498,20 +498,4 @@ class CloudSpeechController extends Controller
             'word_time_offsets' => $wordTimeOffsets,
         ];
     }
-
-    public function getAvailableVoices(Request $request)
-    {
-        $request->validate([
-            'language' => 'required|string',
-        ]);
-
-        $language = $request->language;
-        $config = $this->getLanguageConfig($language);
-
-        return response()->json([
-            'language' => $language,
-            'language_code' => $config['code'],
-            'available_voices' => $config['voices'],
-        ]);
-    }
 }
