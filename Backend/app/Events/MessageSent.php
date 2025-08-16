@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\ChatMessage;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
@@ -10,9 +9,9 @@ class MessageSent implements ShouldBroadcast
 {
     public $message;
 
-    public function __construct(ChatMessage $message)
+    public function __construct($message)
     {
-        $this->message = $message->load('chat');
+        $this->message = $message;
     }
 
     public function broadcastOn()
@@ -22,12 +21,6 @@ class MessageSent implements ShouldBroadcast
 
     public function broadcastWith()
     {
-        return [
-            'id' => $this->message->id,
-            'messages' => $this->message->messages,
-            'chat_id' => $this->message->chat_id,
-            'sent_by' => $this->message->sent_by,
-            'sent_at' => $this->message->sent_at,
-        ];
+        return (array) $this->message;
     }
 }

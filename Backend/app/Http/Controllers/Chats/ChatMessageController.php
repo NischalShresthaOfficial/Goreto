@@ -41,7 +41,10 @@ class ChatMessageController extends Controller
             'sent_at' => now(),
         ]);
 
-        broadcast(new MessageSent($message));
+        $decryptedMessage = $message->toArray();
+        $decryptedMessage['messages'] = Crypt::decryptString($message->messages);
+
+        broadcast(new MessageSent((object) $decryptedMessage));
 
         $recipientIds = UserChat::where('chat_id', $request->chat_id)
             ->where('user_id', '!=', $senderId)
