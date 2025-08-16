@@ -129,6 +129,31 @@ class RecommendationController extends Controller
         return $recommendedNames;
     }
 
+    private function extractAIDescriptions(string $recommendationText, $locations): array
+    {
+        $aiDescriptions = [];
+        $locationNames = $locations->pluck('name')->toArray();
+
+        $pattern = '/(\d+\.\s+)([^:]+):\s*([^0-9]+?)(?=\d+\.\s+|$)/s';
+        preg_match_all($pattern, $recommendationText, $matches, PREG_SET_ORDER);
+
+        foreach ($matches as $match) {
+            if (count($match) >= 4) {
+                $locationPart = trim($match[2]);
+                $description = trim($match[3]);
+
+                foreach ($locationNames as $locationName) {
+                    if (stripos($locationPart, $locationName) !== false) {
+                        $aiDescriptions[$locationName] = $description;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return $aiDescriptions;
+    }
+
     public function recommendFromPrompt(Request $request)
     {
         $request->validate([
@@ -191,11 +216,13 @@ class RecommendationController extends Controller
 
         $recommendedLocationNames = $this->extractRecommendedLocations($recommendationText, $locations);
 
+        $aiDescriptions = $this->extractAIDescriptions($recommendationText, $locations);
+
         $recommendedLocations = $locations->filter(function ($loc) use ($recommendedLocationNames) {
             return in_array($loc->name, $recommendedLocationNames);
         });
 
-        $locationDetails = $recommendedLocations->map(function ($loc) {
+        $locationDetails = $recommendedLocations->map(function ($loc) use ($aiDescriptions) {
             return [
                 'id' => $loc->id,
                 'name' => $loc->name,
@@ -203,7 +230,8 @@ class RecommendationController extends Controller
                 'longitude' => $loc->longitude,
                 'city' => $loc->city->city ?? 'Unknown',
                 'category' => $loc->category->category ?? 'Unknown',
-                'description' => $loc->description ?? 'No description available',
+                'description' => $aiDescriptions[$loc->name] ?? $loc->description ?? 'No description available',
+                'db_description' => $loc->description ?? 'No description available',
                 'average_rating' => $loc->average_rating,
                 'place_id' => $loc->place_id ?? null,
                 'distance' => $loc->distance ?? null,
